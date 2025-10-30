@@ -140,3 +140,6 @@ class Loader {
         }
     }
 }
+
+
+// wizard only runs after activation. should it iclude always? THINK ABOUT IT!

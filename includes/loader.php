@@ -47,7 +47,7 @@ class Loader {
      * Load feature modules (comments, WooCommerce, shortcodes, etc.)
      */
     private static function load_features() {
-        $features_path = MNI_FREE_PATH . 'includes/features/';
+        $features_path = MNI_FREE_PATH . 'features/';
 
         $feature_files = [
             'comments.php',
@@ -78,7 +78,6 @@ class Loader {
         $admin_path = MNI_FREE_PATH . 'admin/';
         $admin_files = [
             'settings.php',
-            'wizard.php',
         ];
 
         foreach ( $admin_files as $file ) {
@@ -140,6 +139,3 @@ class Loader {
         }
     }
 }
-
-
-// wizard only runs after activation. should it iclude always? THINK ABOUT IT!

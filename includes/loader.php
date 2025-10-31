@@ -52,7 +52,7 @@ class Loader {
         $feature_files = [
             'comments.php',
             'woocommerce.php',
-            'shortcodes.php',
+            'anonymous-form.php',
         ];
 
         foreach ( $feature_files as $file ) {

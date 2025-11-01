@@ -1,103 +1,120 @@
 <?php
 /**
- * Messenger Notifier (Free)
+ * Messenger Notifier Free — Hooks
  *
- * Hooks – registers all WordPress actions and filters for the plugin.
- *
- * @package MessengerNotifier
+ * @package MessengerNotifierFree
+ * @since 1.1.0
  */
 
 namespace MNI_FREE;
 
-// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 /**
  * Class Hooks
- * Registers and manages plugin-wide hooks and filters.
+ *
+ * Responsible for registering and handling all WordPress hooks and actions
+ * used across the plugin.
  */
-final class Hooks {
+class Hooks {
 
-    /**
-     * Initialize the hooks system.
-     */
-    public static function init() {
+	/**
+	 * Initialize all plugin hooks.
+	 *
+	 * @return void
+	 */
+	public static function init() {
+		// Core WordPress hooks.
+		add_action( 'init', [ __CLASS__, 'register_shortcodes' ] );
 
-        // 🔹 Core plugin hooks
-        add_action( 'init', [ __CLASS__, 'register_shortcodes' ] );
-        add_action( 'plugins_loaded', [ __CLASS__, 'load_textdomain' ] );
+		// Comment notification.
+		add_action( 'comment_post', [ __CLASS__, 'on_comment_posted' ], 10, 2 );
 
-        // 🔹 Admin notifications (for missing files or feature classes)
-        add_action( 'mni_free_missing_file', [ __CLASS__, 'handle_missing_file' ] );
-        add_action( 'mni_free_missing_feature', [ __CLASS__, 'handle_missing_feature' ] );
+		// WooCommerce integration hooks.
+		if ( class_exists( 'WooCommerce' ) ) {
+			add_action( 'woocommerce_order_status_completed', [ __CLASS__, 'on_order_completed' ], 10, 1 );
+			// In future releases, more actions will be added dynamically from /features/woocommerce/.
+		}
+	}
 
-        // 🔹 Filters for extending data (Pro-ready)
-        self::register_filters();
-    }
+	/**
+	 * Register all plugin shortcodes.
+	 *
+	 * @return void
+	 */
+	public static function register_shortcodes() {
+		$shortcode = new \MNI_FREE\Features\Shortcode_Anonymous();
+		$shortcode->register();
+	}
 
-    /**
-     * Register textdomain for translations.
-     */
-    public static function load_textdomain() {
-        load_plugin_textdomain(
-            'messengernotifier',
-            false,
-            dirname( MNI_FREE_BASENAME ) . '/languages/'
-        );
-    }
+	/**
+	 * Handle new comment submission.
+	 *
+	 * @param int        $comment_ID   Comment ID.
+	 * @param int|string $comment_approved  Comment approval status.
+	 *
+	 * @return void
+	 */
+	public static function on_comment_posted( $comment_ID, $comment_approved ) {
+		if ( 1 !== (int) $comment_approved ) {
+			return;
+		}
 
-    /**
-     * Register shortcode loading (delegated to Shortcodes feature).
-     */
-    public static function register_shortcodes() {
-        do_action( 'mni_free_register_shortcodes' );
-    }
+		$comment_data = get_comment( $comment_ID );
+		if ( ! $comment_data ) {
+			return;
+		}
 
-    /**
-     * Handle missing file warnings gracefully.
-     *
-     * @param string $file_path Path to the missing file.
-     */
-    public static function handle_missing_file( $file_path ) {
-        if ( is_admin() ) {
-            error_log( "[MessengerNotifierFree] Missing file: {$file_path}" );
-        }
-    }
+		$message_data = [
+			'type'      => 'comment',
+			'author'    => $comment_data->comment_author,
+			'content'   => $comment_data->comment_content,
+			'post_link' => get_permalink( $comment_data->comment_post_ID ),
+			'post_title'=> get_the_title( $comment_data->comment_post_ID ),
+			'date'      => $comment_data->comment_date,
+		];
 
-    /**
-     * Handle missing feature warnings gracefully.
-     *
-     * @param string $class_name Name of the missing class.
-     */
-    public static function handle_missing_feature( $class_name ) {
-        if ( is_admin() ) {
-            error_log( "[MessengerNotifierFree] Missing feature class: {$class_name}" );
-        }
-    }
+		// Allow Pro version to extend message data.
+		$message_data = apply_filters( 'mni_free_message_data', $message_data, 'comment_post' );
 
-    /**
-     * Register WordPress filters for extendable data points.
-     * 
-     * These allow the Pro version to inject extra information into messages.
-     */
-    private static function register_filters() {
+		// Send via Messenger Manager.
+		$manager = new \MNI_FREE\Messenger_Manager();
+		$manager->send_message( $message_data );
+	}
 
-        /**
-         * 🔸 Filter: Modify data before sending to messenger API.
-         *
-         * @param array $data {
-         *   @type string $token
-         *   @type string $channel_id
-         *   @type string $message
-         *   @type string $hashtag
-         *   @type string $messenger  (e.g., 'eitaa')
-         * }
-         */
-        add_filter( 'mni_free_before_send_message', function( $data ) {
-            return $data; // Default: no modification
-        }, 10, 1 );
+	/**
+	 * Handle WooCommerce order completed event.
+	 *
+	 * @param int $order_id Order ID.
+	 *
+	 * @return void
+	 */
+	public static function on_order_completed( $order_id ) {
+		if ( ! $order_id ) {
+			return;
+		}
 
-        /**
-         * 🔸 Filter: Modify comment mess*
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return;
+		}
+
+		$message_data = [
+			'type'        => 'woocommerce_order_completed',
+			'order_id'    => $order->get_id(),
+			'customer'    => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+			'total'       => $order->get_total(),
+			'currency'    => $order->get_currency(),
+			'email'       => $order->get_billing_email(),
+			'date'        => $order->get_date_completed() ? $order->get_date_completed()->date_i18n() : current_time( 'mysql' ),
+		];
+
+		// Let Pro version or other add-ons extend data.
+		$message_data = apply_filters( 'mni_free_message_data', $message_data, 'order_completed' );
+
+		$manager = new \MNI_FREE\Messenger_Manager();
+		$manager->send_message( $message_data );
+	}
+}

@@ -94,7 +94,7 @@ final class Init {
             require_once $loader_file;
 
             if ( class_exists( __NAMESPACE__ . '\\Loader' ) ) {
-                Loader::run();
+                Loader::init();
             }
         } else {
             do_action( 'mni_free_missing_file', $loader_file );

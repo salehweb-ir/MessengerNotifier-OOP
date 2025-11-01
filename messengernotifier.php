@@ -3,7 +3,7 @@
  * Plugin Name:       Messenger Notifier
  * Plugin URI:        https://eitaa.com/messengernotifier
  * Description:       Sends WordPress notifications to supported messengers like Eitaa. Allows anonymous contact form and WooCommerce order alerts.
- * Version:           1.0.0
+ * Version:           2.0.0
  * Author:            MJAsia
  * Author URI:        https://eitaa.com/mjasia
  * License:           GPL-3.0-or-later

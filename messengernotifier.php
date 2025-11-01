@@ -37,6 +37,17 @@ if ( ! defined( 'MNI_FREE_BASENAME' ) ) {
 	define( 'MNI_FREE_BASENAME', plugin_basename( __FILE__ ) );
 }
 
+if ( ! defined( 'MNI_FREE_OPTION_KEYS' ) ) {
+	define(
+		'MNI_FREE_OPTION_KEYS',
+		json_encode([
+			'mni_free_token_eitaa_api',
+			'mni_free_eitaa_channel_id',
+			'mni_free_pageid',
+		])
+	);
+}
+
 // ==================================================
 //  Activation hook – setup wizard
 // ==================================================

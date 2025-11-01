@@ -1,96 +1,156 @@
 <?php
 /**
- * Setup Wizard for Messenger Notifier
- *
- * Runs once on plugin activation to initialize default options
- * and create the anonymous contact page.
+ * Setup Wizard for Messenger Notifier Free
  *
  * @package MessengerNotifier
  */
 
-namespace MNI_FREE;
+namespace MNI_FREE\Includes;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Prevent direct access
-}
+use MNI_FREE\API\Messenger_Manager;
+
+defined( 'ABSPATH' ) || exit;
 
 class Wizard {
 
 	/**
-	 * Run setup wizard on activation.
-	 *
-	 * @return void
+	 * Option key to detect if setup is complete.
 	 */
-	public static function run_setup() {
-		self::create_default_options();
-		self::create_anonymous_page();
+	private const OPTION_SETUP_COMPLETE = 'mni_free_setup_complete';
+
+	/**
+	 * Init hooks.
+	 */
+	public function init() {
+		register_activation_hook( MNI_FREE_PLUGIN_FILE, [ $this, 'on_activation' ] );
+		add_action( 'admin_menu', [ $this, 'register_wizard_page' ] );
+		add_action( 'admin_post_mni_free_wizard_save', [ $this, 'save_settings' ] );
 	}
 
 	/**
-	 * Create default plugin options if not already set.
-	 *
-	 * @return void
+	 * Run on plugin activation.
 	 */
-	private static function create_default_options() {
-
-		/**
-		 * Define supported messengers.
-		 * Future messengers (Bale, Gap, Telegram, etc.) can easily be added here.
-		 */
-		$messengers = [
-			'eitaa' => [
-				'token_option'  => 'mni_free_token_eitaa_api',
-				'id_option'     => 'mni_free_eitaa_channel_id',
-			],
-			// Example for future messengers:
-			// 'bale'  => [
-			// 	'token_option'  => 'mni_free_token_bale_api',
-			// 	'id_option'     => 'mni_free_bale_channel_id',
-			// ],
-		];
-
-		// Global default options
-		$defaults = [
-			'mni_free_selected_messengers' => [ 'eitaa' ], // Default active messenger
-			'mni_free_enable_anon_page'    => true,
-			'mni_free_version'             => MNI_FREE_VERSION,
-		];
-
-		// Add messenger-specific options dynamically
-		foreach ( $messengers as $slug => $fields ) {
-			foreach ( $fields as $key => $option_name ) {
-				$defaults[ $option_name ] = '';
-			}
-		}
-
-		// Save each option only if missing
-		foreach ( $defaults as $key => $value ) {
-			if ( get_option( $key ) === false ) {
-				add_option( $key, $value );
-			}
+	public function on_activation() {
+		if ( ! get_option( self::OPTION_SETUP_COMPLETE ) ) {
+			add_option( self::OPTION_SETUP_COMPLETE, false );
+			wp_safe_redirect( admin_url( 'admin.php?page=mni-free-setup' ) );
+			exit;
 		}
 	}
 
 	/**
-	 * Create anonymous contact page automatically if not exists.
-	 *
-	 * @return void
+	 * Register temporary wizard page.
 	 */
-	private static function create_anonymous_page() {
-		$page_title = __( 'Anonymous Message', 'messengernotifier' );
-		$page_check = get_page_by_title( $page_title );
+	public function register_wizard_page() {
+		if ( get_option( self::OPTION_SETUP_COMPLETE ) ) {
+			return;
+		}
 
-		if ( ! $page_check ) {
-			$page_id = wp_insert_post( [
-				'post_title'   => $page_title,
-				'post_content' => '[messengernotifier_form]',
-				'post_status'  => 'publish',
-				'post_type'    => 'page',
-			] );
+		add_menu_page(
+			__( 'Messenger Notifier Setup', 'messengernotifier' ),
+			__( 'Messenger Setup', 'messengernotifier' ),
+			'manage_options',
+			'mni-free-setup',
+			[ $this, 'render_setup_page' ],
+			'dashicons-format-chat',
+			2
+		);
+	}
 
-			if ( $page_id && ! is_wp_error( $page_id ) ) {
-				update_option( 'mni_free_anonymous_page_id', $page_id );
-			}
+	/**
+	 * Render setup form.
+	 */
+	public function render_setup_page() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$messengers = Messenger_Manager::get_available_messengers();
+		?>
+		<div class="wrap">
+			<h1><?php esc_html_e( 'Messenger Notifier – Setup Wizard', 'messengernotifier' ); ?></h1>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+				<?php wp_nonce_field( 'mni_free_wizard_save' ); ?>
+				<input type="hidden" name="action" value="mni_free_wizard_save">
+
+				<p><?php esc_html_e( 'Enter your API tokens and IDs for the messengers you want to activate.', 'messengernotifier' ); ?></p>
+
+				<table class="form-table" role="presentation">
+					<tbody>
+					<?php foreach ( $messengers as $slug => $label ) : ?>
+						<tr>
+							<th scope="row"><?php echo esc_html( $label ); ?></th>
+							<td>
+								<label for="token_<?php echo esc_attr( $slug ); ?>">
+									<?php esc_html_e( 'API Token:', 'messengernotifier' ); ?>
+								</label><br>
+								<input type="text" name="token_<?php echo esc_attr( $slug ); ?>" id="token_<?php echo esc_attr( $slug ); ?>" class="regular-text" value="">
+							</td>
+						</tr>
+					<?php endforeach; ?>
+					</tbody>
+				</table>
+
+				<p>
+					<label>
+						<input type="checkbox" name="create_anon_page" value="1" checked>
+						<?php esc_html_e( 'Create anonymous contact page automatically', 'messengernotifier' ); ?>
+					</label>
+				</p>
+
+				<?php submit_button( __( 'Finish Setup', 'messengernotifier' ) ); ?>
+			</form>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Save the submitted settings.
+	 */
+	public function save_settings() {
+		check_admin_referer( 'mni_free_wizard_save' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Access denied.', 'messengernotifier' ) );
+		}
+
+		$messengers = Messenger_Manager::get_available_messengers();
+
+		foreach ( $messengers as $slug => $label ) {
+			$token_key = "messengernotifier_token_{$slug}_api";
+			$token_val = isset( $_POST[ "token_{$slug}" ] ) ? sanitize_text_field( wp_unslash( $_POST[ "token_{$slug}" ] ) ) : '';
+			update_option( $token_key, $token_val );
+		}
+
+		if ( ! empty( $_POST['create_anon_page'] ) ) {
+			$this->create_anonymous_page();
+		}
+
+		update_option( self::OPTION_SETUP_COMPLETE, true );
+
+		wp_safe_redirect( admin_url( 'admin.php?page=mni-free-settings&setup=done' ) );
+		exit;
+	}
+
+	/**
+	 * Create anonymous contact page.
+	 */
+	private function create_anonymous_page() {
+		$page_exists = get_page_by_path( 'anonymous-message' );
+		if ( $page_exists ) {
+			return;
+		}
+
+		$page_id = wp_insert_post( [
+			'post_title'   => __( 'Anonymous Message', 'messengernotifier' ),
+			'post_name'    => 'anonymous-message',
+			'post_status'  => 'publish',
+			'post_type'    => 'page',
+			'post_content' => '[mni_free_anonymous_form]',
+		] );
+
+		if ( $page_id && ! is_wp_error( $page_id ) ) {
+			update_option( 'mni_free_anon_page_id', $page_id );
 		}
 	}
 }

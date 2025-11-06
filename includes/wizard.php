@@ -7,10 +7,13 @@
 
 namespace MNI_FREE\Includes;
 
-use MNI_FREE\Includes\Messenger_Manager;
+use MNI_FREE\Includes\MessengerManager;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Handles the setup wizard UI and settings.
+ */
 class Wizard {
 
 	/**
@@ -19,29 +22,37 @@ class Wizard {
 	private const OPTION_SETUP_COMPLETE = 'mni_free_setup_complete';
 
 	/**
-	 * Init hooks.
+	 * Initialize hooks.
 	 */
-	public function init() {
-		register_activation_hook( MNI_FREE_PLUGIN_FILE, [ $this, 'on_activation' ] );
-		add_action( 'admin_menu', [ $this, 'register_wizard_page' ] );
-		add_action( 'admin_post_mni_free_wizard_save', [ $this, 'save_settings' ] );
+	public static function init() {
+		add_action( 'admin_menu', [ __CLASS__, 'register_wizard_page' ] );
+		add_action( 'admin_post_mni_free_wizard_save', [ __CLASS__, 'save_settings' ] );
 	}
 
 	/**
-	 * Run on plugin activation.
+	 * Runs when plugin is activated (registered in main file).
 	 */
-	public function on_activation() {
+	public static function on_activation() {
+
+		error_log("on_activation");
+
 		if ( ! get_option( self::OPTION_SETUP_COMPLETE ) ) {
 			add_option( self::OPTION_SETUP_COMPLETE, false );
-			wp_safe_redirect( admin_url( 'admin.php?page=mni-free-setup' ) );
-			exit;
 		}
+
+		// Initialize default messengers if needed.
+		Messenger_Manager::init_active_messengers();
+
+		// Schedule redirect.
+		set_transient( 'mni_free_do_activation_redirect', true, 30 );
 	}
 
 	/**
-	 * Register temporary wizard page.
+	 * Register the wizard page.
 	 */
-	public function register_wizard_page() {
+	public static function register_wizard_page() {
+
+		error_log("register_wizard_page");
 		if ( get_option( self::OPTION_SETUP_COMPLETE ) ) {
 			return;
 		}
@@ -51,16 +62,16 @@ class Wizard {
 			__( 'Messenger Setup', 'messengernotifier' ),
 			'manage_options',
 			'mni-free-setup',
-			[ $this, 'render_setup_page' ],
+			[ __CLASS__, 'render_setup_page' ],
 			'dashicons-format-chat',
 			2
 		);
 	}
 
 	/**
-	 * Render setup form.
+	 * Render the setup form UI.
 	 */
-	public function render_setup_page() {
+	public static function render_setup_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
@@ -105,9 +116,9 @@ class Wizard {
 	}
 
 	/**
-	 * Save the submitted settings.
+	 * Save submitted settings.
 	 */
-	public function save_settings() {
+	public static function save_settings() {
 		check_admin_referer( 'mni_free_wizard_save' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -123,7 +134,7 @@ class Wizard {
 		}
 
 		if ( ! empty( $_POST['create_anon_page'] ) ) {
-			$this->create_anonymous_page();
+			self::create_anonymous_page();
 		}
 
 		update_option( self::OPTION_SETUP_COMPLETE, true );
@@ -133,9 +144,9 @@ class Wizard {
 	}
 
 	/**
-	 * Create anonymous contact page.
+	 * Create anonymous contact page if not exists.
 	 */
-	private function create_anonymous_page() {
+	private static function create_anonymous_page() {
 		$page_exists = get_page_by_path( 'anonymous-message' );
 		if ( $page_exists ) {
 			return;

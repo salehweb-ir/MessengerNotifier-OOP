@@ -40,32 +40,7 @@ final class Init {
      * Define plugin constants if not already defined.
      */
     private static function define_constants() {
-        if ( ! defined( 'MNI_FREE_VERSION' ) ) {
-            define( 'MNI_FREE_VERSION', '2.0.0' );
-        }
 
-        if ( ! defined( 'MNI_FREE_PATH' ) ) {
-            define( 'MNI_FREE_PATH', plugin_dir_path( dirname( __FILE__ ) ) );
-        }
-
-        if ( ! defined( 'MNI_FREE_URL' ) ) {
-            define( 'MNI_FREE_URL', plugin_dir_url( dirname( __FILE__ ) ) );
-        }
-
-        if ( ! defined( 'MNI_FREE_BASENAME' ) ) {
-            define( 'MNI_FREE_BASENAME', plugin_basename( MNI_FREE_PATH . 'messengernotifier.php' ) );
-        }
-
-        if ( ! defined( 'MNI_FREE_OPTION_KEYS' ) ) {
-            define(
-                'MNI_FREE_OPTION_KEYS',
-                json_encode([
-                    'mni_free_token_eitaa_api',
-                    'mni_free_eitaa_channel_id',
-                    'mni_free_pageid',
-                ])
-            );
-        }
     }
 
     /**

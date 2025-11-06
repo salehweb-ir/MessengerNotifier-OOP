@@ -7,7 +7,7 @@
 
 namespace MNI_FREE\Includes;
 
-use MNI_FREE\API\Messenger_Manager;
+use MNI_FREE\Includes\Messenger_Manager;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -65,7 +65,7 @@ class Wizard {
 			return;
 		}
 
-		$messengers = Messenger_Manager::get_available_messengers();
+		$messengers = (new Messenger_Manager)->init_active_messengers();
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Messenger Notifier – Setup Wizard', 'messengernotifier' ); ?></h1>
@@ -114,7 +114,7 @@ class Wizard {
 			wp_die( esc_html__( 'Access denied.', 'messengernotifier' ) );
 		}
 
-		$messengers = Messenger_Manager::get_available_messengers();
+		$messengers = Messenger_Manager::init_active_messengers();
 
 		foreach ( $messengers as $slug => $label ) {
 			$token_key = "messengernotifier_token_{$slug}_api";

@@ -65,7 +65,7 @@ class Wizard {
 			return;
 		}
 
-		$messengers = (new Messenger_Manager)->init_active_messengers();
+		$messengers = Messenger_Manager::init_active_messengers();
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Messenger Notifier – Setup Wizard', 'messengernotifier' ); ?></h1>

@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 //  Define plugin constants
 // ==================================================
 if ( ! defined( 'MNI_FREE_VERSION' ) ) {
-	define( 'MNI_FREE_VERSION', '1.0.0' );
+	define( 'MNI_FREE_VERSION', '2.0.0' );
 }
 
 if ( ! defined( 'MNI_FREE_PATH' ) ) {
@@ -41,7 +41,7 @@ if ( ! defined( 'MNI_FREE_OPTION_KEYS' ) ) {
 	define(
 		'MNI_FREE_OPTION_KEYS',
 		json_encode([
-			'mni_free_token_eitaa_api',
+			'mni_free_eitaa_token',
 			'mni_free_eitaa_channel_id',
 			'mni_free_pageid',
 		])

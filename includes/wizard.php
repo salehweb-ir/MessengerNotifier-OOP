@@ -22,7 +22,7 @@ class Wizard {
 	 * Init hooks.
 	 */
 	public function init() {
-		register_activation_hook( MNI_FREE_PLUGIN_FILE, [ $this, 'on_activation' ] );
+		register_activation_hook( MNI_FREE_BASENAME, [ $this, 'on_activation' ] );
 		add_action( 'admin_menu', [ $this, 'register_wizard_page' ] );
 		add_action( 'admin_post_mni_free_wizard_save', [ $this, 'save_settings' ] );
 	}

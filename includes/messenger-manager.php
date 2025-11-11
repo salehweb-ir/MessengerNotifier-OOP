@@ -6,7 +6,7 @@
  * @subpackage Includes
  */
 
-namespace MNI_FREE\Includes;
+namespace MNI_FREE;
 
 use MNI_FREE\API\Eitaa;
 

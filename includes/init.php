@@ -40,21 +40,7 @@ final class Init {
      * Define plugin constants if not already defined.
      */
     private static function define_constants() {
-        if ( ! defined( 'MNI_FREE_VERSION' ) ) {
-            define( 'MNI_FREE_VERSION', '1.0.0' );
-        }
 
-        if ( ! defined( 'MNI_FREE_PATH' ) ) {
-            define( 'MNI_FREE_PATH', plugin_dir_path( dirname( __FILE__ ) ) );
-        }
-
-        if ( ! defined( 'MNI_FREE_URL' ) ) {
-            define( 'MNI_FREE_URL', plugin_dir_url( dirname( __FILE__ ) ) );
-        }
-
-        if ( ! defined( 'MNI_FREE_BASENAME' ) ) {
-            define( 'MNI_FREE_BASENAME', plugin_basename( MNI_FREE_PATH . 'messengernotifier.php' ) );
-        }
     }
 
     /**

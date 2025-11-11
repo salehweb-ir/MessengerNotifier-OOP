@@ -25,6 +25,10 @@ if ( ! defined( 'MNI_FREE_VERSION' ) ) {
 	define( 'MNI_FREE_VERSION', '2.0.0' );
 }
 
+if ( ! defined( 'MNI_FREE_PLUGIN_FILE' ) ) {
+	define( 'MNI_FREE_PLUGIN_FILE', __FILE__ );
+}
+
 if ( ! defined( 'MNI_FREE_PATH' ) ) {
 	define( 'MNI_FREE_PATH', plugin_dir_path( __FILE__ ) );
 }
@@ -56,8 +60,8 @@ register_activation_hook( __FILE__, 'mni_free_on_activate' );
 function mni_free_on_activate() {
 	require_once MNI_FREE_PATH . 'includes/wizard.php';
 
-	if ( class_exists( '\MNI_FREE\Wizard' ) ) {
-		\MNI_FREE\Wizard::run_setup();
+	if ( class_exists( '\MNI_FREE\Includes\Wizard' ) ) {
+		(new \MNI_FREE\Includes\Wizard)->init();
 	}
 }
 

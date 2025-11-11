@@ -8,7 +8,7 @@
 
 namespace MNI_FREE;
 
-use MNI_FREE\API\Eitaa;
+use MNI_FREE\API;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Prevent direct access
@@ -21,103 +21,118 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Messenger_Manager {
 
-	/**
-	 * The list of active messengers.
+		/**
+	 * Holds loaded messenger instances.
 	 *
-	 * @var array
+	 * @var array<string, object>
 	 */
-	private $active_messengers = [];
+	private static $messengers = [];
 
 	/**
-	 * Plugin options.
+	 * Initialize and load active messengers.
 	 *
-	 * @var array
+	 * Called on plugin init or activation wizard setup.
+	 *
+	 * @since 1.1.0
 	 */
-	private $options = [];
+	public static function init_active_messengers() {
+		$active_messengers = get_option( 'mni_free_active_messengers', [ 'Eitaa' ] );
 
-	/**
-	 * Constructor.
-	 *
-	 * Loads plugin settings and initializes active messengers.
-	 */
-	public function __construct() {
-		$this->options = get_option( 'mni_free_settings', [] );
-		$this->init_active_messengers();
+		if ( empty( $active_messengers ) || ! is_array( $active_messengers ) ) {
+			$active_messengers = [ 'Eitaa' ]; // Default fallback.
+		}
+
+		foreach ( $active_messengers as $messenger_name ) {
+			self::load_messenger( $messenger_name );
+		}
+
+		do_action( 'mni_free_messengers_initialized', self::$messengers );
 	}
 
 	/**
-	 * Initialize active messengers based on plugin settings.
+	 * Load a single messenger API file and instantiate it.
 	 *
-	 * Example structure:
-	 * [
-	 *   'eitaa' => [ 'token' => '...', 'channel_id' => '...' ],
-	 *   'bale'  => [ 'token' => '...', 'chat_id' => '...' ],
-	 * ]
-	 *
+	 * @param string $messenger_name Messenger name (e.g., "Eitaa", "Bale").
 	 * @return void
 	 */
-	private function init_active_messengers() {
-		if ( empty( $this->options['messengers'] ) ) {
+	private static function load_messenger( string $messenger_name ) {
+		$file_path  = MNI_FREE_PATH . 'api/' . strtolower( $messenger_name ) . '.php';
+		$class_name = '\\MNI_FREE\\API\\' . $messenger_name;
+
+		if ( ! file_exists( $file_path ) ) {
+			do_action( 'mni_free_missing_messenger_file', $messenger_name, $file_path );
 			return;
 		}
 
-		foreach ( $this->options['messengers'] as $messenger_key => $data ) {
-			switch ( $messenger_key ) {
-				case 'eitaa':
-					$this->active_messengers['eitaa'] = new Eitaa(
-						$data['token'] ?? '',
-						$data['channel_id'] ?? ''
-					);
-					break;
+		require_once $file_path;
 
-				// Example for future expansion:
-				// case 'bale':
-				//     $this->active_messengers['bale'] = new Bale( $data['token'], $data['chat_id'] );
-				//     break;
-			}
+		if ( class_exists( $class_name ) ) {
+			self::$messengers[ $messenger_name ] = new $class_name();
+		} else {
+			do_action( 'mni_free_invalid_messenger_class', $messenger_name, $class_name );
 		}
 	}
 
 	/**
-	 * Send a message to all active messengers.
+	 * Return loaded messenger instances.
 	 *
-	 * @param string $message  The message text.
-	 * @param string $hashtag  The message type (e.g. #order, #comment).
-	 * @return array List of messenger results.
+	 * @return array<string, object>
 	 */
-	public function send_to_all( $message, $hashtag = '' ) {
+	public static function get_messengers(): array {
+		return self::$messengers;
+	}
+
+	/**
+	 * Send message through all active messengers.
+	 *
+	 * @param string $message  The text message to send.
+	 * @param array  $extra    Optional additional data (e.g., WooCommerce order info).
+	 *
+	 * @return array  Result array with success/error per messenger.
+	 */
+	public static function send_message( string $message, array $extra = [] ): array {
 		$results = [];
 
-		if ( empty( $this->active_messengers ) ) {
-			return [ 'error' => __( 'No active messengers configured.', 'messengernotifier' ) ];
+		// Ensure messengers are loaded.
+		if ( empty( self::$messengers ) ) {
+			self::init_active_messengers();
 		}
 
-		foreach ( $this->active_messengers as $key => $messenger ) {
-			if ( method_exists( $messenger, 'send_message' ) ) {
-				$results[ $key ] = $messenger->send_message( $message, $hashtag );
+		foreach ( self::$messengers as $name => $instance ) {
+			if ( method_exists( $instance, 'send_message' ) ) {
+				$results[ $name ] = $instance->send_message( $message, $extra );
 			} else {
-				$results[ $key ] = [
+				$results[ $name ] = [
 					'success' => false,
-					'error'   => sprintf( __( 'Messenger %s does not support message sending.', 'messengernotifier' ), $key ),
+					'error'   => sprintf( __( '%s messenger class does not implement send_message().', 'messengernotifier' ), $name ),
 				];
 			}
 		}
 
+		do_action( 'mni_free_message_sent', $message, $results, $extra );
+
 		return $results;
 	}
 
 	/**
-	 * Test all active messenger connections.
+	 * Check if a specific messenger is active.
 	 *
-	 * @return array
+	 * @param string $messenger_name Messenger name.
+	 * @return bool
 	 */
-	public function test_all() {
-		$results = [];
-		foreach ( $this->active_messengers as $key => $messenger ) {
-			if ( method_exists( $messenger, 'test_connection' ) ) {
-				$results[ $key ] = $messenger->test_connection();
-			}
-		}
-		return $results;
+	public static function is_active( string $messenger_name ): bool {
+		return isset( self::$messengers[ $messenger_name ] );
+	}
+
+	/**
+	 * Add or replace a messenger instance (extendable by Pro or third-party).
+	 *
+	 * @param string $messenger_name
+	 * @param object $instance
+	 * @return void
+	 */
+	public static function register_messenger( string $messenger_name, object $instance ): void {
+		self::$messengers[ $messenger_name ] = $instance;
+		do_action( 'mni_free_messenger_registered', $messenger_name, $instance );
 	}
 }

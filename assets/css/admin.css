@@ -1,0 +1,58 @@
+
+.mni-wizard {
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    max-width: 900px;
+}
+
+/* TAB BUTTONS */
+.mni-tab-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.mni-tab-btn {
+    padding: 8px 18px;
+    border: 1px solid #ccd0d4;
+    background: #f0f0f0;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.mni-tab-btn.active {
+    background: #2271b1;
+    color: #fff;
+    border-color: #2271b1;
+}
+
+/* TABS CONTENT */
+.mni-tab-content {
+    display: none;
+    padding: 15px 0;
+}
+
+.mni-tab-content.active {
+    display: block;
+}
+
+.mni-input {
+    width: 100%;
+    padding: 7px;
+    margin-bottom: 15px;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+}
+
+.mni-checkbox {
+    display: block;
+    padding: 6px 0;
+}
+
+.mni-save-btn {
+    margin-top: 25px;
+    padding: 10px 20px;
+    font-size: 15px;
+}

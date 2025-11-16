@@ -1,90 +1,69 @@
-
 .mni-wizard-wrapper {
-    max-width: 760px;
+    max-width: 920px;
+    margin: 20px auto;
     background: #fff;
-    padding: 20px;
+    padding: 22px;
     border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
 }
 
-/* Steps wrapper */
+/* Each step area */
 .mni-step {
-    min-height: 300px;                  /* ← REQUIRED */
-    position: relative;                 /* ← ALLOWS BUTTONS TO BE POSITIONED AT BOTTOM */
-    padding-bottom: 70px;               /* ← SPACE FOR NAV BUTTONS */
-}
-
-/* Step navigation buttons */
-.mni-step .mni-next-step,
-.mni-step .mni-prev-step,
-.mni-step .mni-finish {
-    position: absolute;
-    bottom: 15px;                       /* ← STICKS TO BOTTOM */
-}
-
-.mni-step .mni-next-step,
-.mni-step .mni-finish {
-    right: 0;
-}
-
-.mni-step .mni-prev-step {
-    left: 0;
-}
-
-/* Step indicator */
-.mni-steps {
-    display: flex;
+    min-height: 300px;
+    position: relative;
+    padding-bottom: 80px; /* space for bottom buttons */
     margin-bottom: 20px;
-    list-style: none;
 }
 
-.mni-steps li {
-    flex: 1;
-    padding: 10px;
-    text-align: center;
-    background: #e5e5e5;
+/* Buttons area at bottom of each step */
+.mni-tab-buttons {
+    position: absolute;
+    bottom: 18px;
+    right: 18px;
+}
+
+/* Back button left aligned inside step */
+.mni-step .mni-prev-step {
+    position: absolute;
+    bottom: 18px;
+    left: 18px;
+}
+
+/* Inputs */
+.mni-input, .mni-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    margin: 6px 0 12px;
+    border: 1px solid #ccd0d4;
     border-radius: 4px;
-    margin-right: 5px;
-    font-weight: bold;
 }
 
-.mni-steps li.active {
-    background: #2271b1;
-    color: #fff;
-}
-
-/* Checkbox lists */
+/* Checkbox list */
 .mni-checkbox-list label {
     display: block;
     margin-bottom: 8px;
-}
-
-/* Tabs */
-.mni-tabs {
-    margin-top: 15px;
-}
-
-.mni-tab-header {
-    display: flex;
-    list-style: none;
-    margin-bottom: 10px;
-}
-
-.mni-tab-header li {
     cursor: pointer;
-    padding: 8px 12px;
-    background: #eaeaea;
-    margin-right: 5px;
-    border-radius: 4px;
 }
 
-.mni-tab-header li.active {
-    background: #2271b1;
-    color: #fff;
+/* Messenger panels */
+.mni-messenger-panel {
+    border: 1px solid #e6e6e6;
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    background: #fbfbfb;
 }
 
-.mni-tab-content {
-    display: none;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+/* Test result */
+.mni-test-result {
+    margin-left: 12px;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .mni-step { padding-bottom: 100px; }
+    .mni-tab-buttons { bottom: 14px; right: 14px; }
+    .mni-step .mni-prev-step { left: 14px; }
 }

@@ -50,6 +50,11 @@ class mni_free_admin {
             MNI_FREE_VERSION
         );
 
+        wp_localize_script( 'mni-wizard-js-handle', 'mniWizard', [
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce'   => wp_create_nonce( 'mni_free_test_api_nonce' ),
+        ] );
+
         wp_enqueue_script(
             'mni-free-admin',
             MNI_FREE_URL . 'assets/js/admin.js',

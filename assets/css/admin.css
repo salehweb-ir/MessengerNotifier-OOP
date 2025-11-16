@@ -1,58 +1,90 @@
 
-.mni-wizard {
+.mni-wizard-wrapper {
+    max-width: 760px;
     background: #fff;
-    padding: 25px;
+    padding: 20px;
     border-radius: 8px;
-    max-width: 900px;
 }
 
-/* TAB BUTTONS */
-.mni-tab-buttons {
+/* Steps wrapper */
+.mni-step {
+    min-height: 300px;                  /* ← REQUIRED */
+    position: relative;                 /* ← ALLOWS BUTTONS TO BE POSITIONED AT BOTTOM */
+    padding-bottom: 70px;               /* ← SPACE FOR NAV BUTTONS */
+}
+
+/* Step navigation buttons */
+.mni-step .mni-next-step,
+.mni-step .mni-prev-step,
+.mni-step .mni-finish {
+    position: absolute;
+    bottom: 15px;                       /* ← STICKS TO BOTTOM */
+}
+
+.mni-step .mni-next-step,
+.mni-step .mni-finish {
+    right: 0;
+}
+
+.mni-step .mni-prev-step {
+    left: 0;
+}
+
+/* Step indicator */
+.mni-steps {
     display: flex;
-    gap: 10px;
     margin-bottom: 20px;
+    list-style: none;
 }
 
-.mni-tab-btn {
-    padding: 8px 18px;
-    border: 1px solid #ccd0d4;
-    background: #f0f0f0;
-    cursor: pointer;
+.mni-steps li {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    background: #e5e5e5;
     border-radius: 4px;
-    font-weight: 600;
+    margin-right: 5px;
+    font-weight: bold;
 }
 
-.mni-tab-btn.active {
+.mni-steps li.active {
     background: #2271b1;
     color: #fff;
-    border-color: #2271b1;
 }
 
-/* TABS CONTENT */
-.mni-tab-content {
-    display: none;
-    padding: 15px 0;
-}
-
-.mni-tab-content.active {
+/* Checkbox lists */
+.mni-checkbox-list label {
     display: block;
+    margin-bottom: 8px;
 }
 
-.mni-input {
-    width: 100%;
-    padding: 7px;
-    margin-bottom: 15px;
-    border: 1px solid #ccd0d4;
+/* Tabs */
+.mni-tabs {
+    margin-top: 15px;
+}
+
+.mni-tab-header {
+    display: flex;
+    list-style: none;
+    margin-bottom: 10px;
+}
+
+.mni-tab-header li {
+    cursor: pointer;
+    padding: 8px 12px;
+    background: #eaeaea;
+    margin-right: 5px;
     border-radius: 4px;
 }
 
-.mni-checkbox {
-    display: block;
-    padding: 6px 0;
+.mni-tab-header li.active {
+    background: #2271b1;
+    color: #fff;
 }
 
-.mni-save-btn {
-    margin-top: 25px;
-    padding: 10px 20px;
-    font-size: 15px;
+.mni-tab-content {
+    display: none;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }

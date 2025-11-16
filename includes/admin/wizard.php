@@ -1,113 +1,95 @@
 <?php
-
-if ( ! defined('ABSPATH') ) exit;
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 class mni_free_wizard {
 
     use mni_singleton;
 
-    private $option_key = 'mni_free_settings';
-
-    public function init() {
-
-        // Load view
-        add_action('admin_menu', [ $this, 'register_wizard_page' ]);
-
-        // Handle form submit
-        add_action('admin_post_mni_free_save_wizard', [ $this, 'save_wizard' ]);
+    private function __construct() {
+        add_action( 'admin_menu', [ $this, 'register_page' ] );
+        add_action( 'admin_post_mni_free_save_wizard', [ $this, 'save_wizard' ] );
     }
 
-
-    /** ------------------------------------------------------------------
-     * WIZARD PAGE
-     * ------------------------------------------------------------------*/
-    public function register_wizard_page() {
-
-        add_menu_page(
-            __('Messenger Notifier Wizard', 'messengernotifier'),
-            __('Messenger Wizard', 'messengernotifier'),
+    public function register_page() {
+        add_submenu_page(
+            null,
+            __( 'Messenger Notifier Wizard', 'messengernotifier' ),
+            __( 'Messenger Notifier Wizard', 'messengernotifier' ),
             'manage_options',
-            'mni-free-wizard',
-            [ $this, 'render_wizard_page' ],
-            'dashicons-format-status',
-            2
+            'mni_free_wizard'/* ,
+            [ $this, 'render' ] */
         );
     }
 
-
-    public function render_wizard_page() {
-
-        $settings = get_option($this->option_key, []);
-
+    public function render() {
         require MNI_FREE_PATH . 'views/admin/wizard.php';
     }
 
-
-    /** ------------------------------------------------------------------
-     * FORM SAVE LOGIC
-     * ------------------------------------------------------------------*/
-    public function save_wizard() {
-
-        // Nonce check
-        if ( ! isset($_POST['_wpnonce']) ||
-             ! wp_verify_nonce($_POST['_wpnonce'], 'mni_free_wizard_nonce') ) {
-            wp_die('Security check failed.');
-        }
-
-        // Only admins
-        if ( ! current_user_can('manage_options') ) {
-            wp_die('Permission denied.');
-        }
-
-        // Sanitize data
-        $data = [];
-
-        // Messengers
-        $data['messengers'] = isset($_POST['messengers']) ? array_map('sanitize_text_field', $_POST['messengers']) : [];
-
-        // Contact page settings
-        $data['contact_title'] = sanitize_text_field($_POST['contact_title'] ?? '');
-        $data['contact_slug']  = sanitize_title($_POST['contact_slug'] ?? '');
-
-        // Enabled actions
-        $data['actions'] = isset($_POST['actions']) ? array_map('sanitize_text_field', $_POST['actions']) : [];
-
-        // Messenger-specific settings
-        $data['eitaa'] = [
-            'token'   => sanitize_text_field($_POST['eitaa_token'] ?? ''),
-            'channel' => sanitize_text_field($_POST['eitaa_channel'] ?? ''),
-        ];
-
-        // Save
-        update_option($this->option_key, $data);
-
-        // Redirect with success flag
-        wp_redirect(
-            add_query_arg(
-                ['page' => 'mni-free-wizard', 'saved' => '1'],
-                admin_url('admin.php')
-            )
-        );
-        exit;
-    }
-
-
-    /** Utility for messengers */
-    public function get_messengers() {
+    public function get_settings() {
         return [
-            'eitaa' => [
-                'title' => __('Eitaa', 'messengernotifier'),
-                'help'  => 'https://help.eitaa.com/',
+            'messengers'    => get_option( 'mni_free_selected_messengers', [] ),
+            'contact_title' => get_option( 'mni_free_contact_title', '' ),
+            'contact_slug'  => get_option( 'mni_free_contact_slug', '' ),
+            'actions'       => get_option( 'mni_free_actions', [] ),
+            'eitaa'         => [
+                'token'   => get_option( 'mni_free_eitaa_token', '' ),
+                'channel' => get_option( 'mni_free_eitaa_channel', '' ),
             ],
         ];
     }
 
-    /** Actions list */
+    public function get_messengers() {
+        return [
+            'eitaa' => [
+                'label' => __( 'Eitaa', 'messengernotifier' ),
+            ],
+        ];
+    }
+
     public function get_actions() {
         return [
-            'comment' => __('New Comment', 'messengernotifier'),
-            'user'    => __('New User Registered', 'messengernotifier'),
-            'order'   => __('WooCommerce Order Completed', 'messengernotifier'),
+            'new_comment'   => __( 'New Comment', 'messengernotifier' ),
+            'new_user'      => __( 'New User Registered', 'messengernotifier' ),
+            'wc_completed'  => __( 'WooCommerce Order Completed', 'messengernotifier' ),
         ];
+    }
+
+    public function save_wizard() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( __( 'Permission denied.', 'messengernotifier' ) );
+        }
+
+        if (
+            ! isset( $_POST['mni_free_wizard_nonce'] ) ||
+            ! check_admin_referer( 'mni_free_wizard_action', 'mni_free_wizard_nonce' )
+        ) {
+            wp_die( __( 'Security check failed.', 'messengernotifier' ) );
+        }
+
+        // --- Sanitize and save settings ---
+        $messengers = isset( $_POST['messengers'] ) ?
+            array_map( 'sanitize_text_field', $_POST['messengers'] ) : [];
+
+        update_option( 'mni_free_selected_messengers', $messengers );
+
+        update_option( 'mni_free_contact_title', sanitize_text_field( $_POST['contact_title'] ?? '' ) );
+        update_option( 'mni_free_contact_slug', sanitize_title( $_POST['contact_slug'] ?? '' ) );
+
+        $actions = isset( $_POST['actions'] ) ?
+            array_map( 'sanitize_text_field', $_POST['actions'] ) : [];
+        update_option( 'mni_free_actions', $actions );
+
+        update_option( 'mni_free_eitaa_token', sanitize_text_field( $_POST['eitaa_token'] ?? '' ) );
+        update_option( 'mni_free_eitaa_channel', sanitize_text_field( $_POST['eitaa_channel'] ?? '' ) );
+
+        // Redirect back to wizard with success flag
+        $redirect = add_query_arg(
+            'saved',
+            '1',
+            admin_url( 'admin.php?page=mni_free_wizard' )
+        );
+
+        wp_safe_redirect( $redirect );
+        exit;
     }
 }

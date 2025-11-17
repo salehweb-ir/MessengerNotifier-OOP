@@ -33,7 +33,7 @@ $available_actions = $wizard->get_actions();
                         <input type="checkbox"
                                class="mni-messenger-check"
                                value="<?php echo esc_attr( $id ); ?>"
-                               <?php checked( in_array( $id, (array) get_option( 'mni_free_active_messengers', array( 'eitaa' ) ), true ) ); ?>>
+                               <?php checked( in_array( $id, (array) get_option( 'mni_free_messengers', array( 'eitaa' ) ), true ) ); ?>>
                         <?php echo esc_html( $info['label'] ); ?>
                     </label>
                 <?php endforeach; ?>
@@ -74,7 +74,7 @@ $available_actions = $wizard->get_actions();
                 <!-- JS will populate tabs & content based on the hidden JSON field -->
                 <!-- For accessibility, we also output saved DB settings for active messengers as fallback -->
                 <?php
-                $db_active = (array) get_option( 'mni_free_active_messengers', array( 'eitaa' ) );
+                $db_active = (array) get_option( 'mni_free_messengers', array( 'eitaa' ) );
                 foreach ( $db_active as $msgr ) :
                     if ( ! isset( $available[ $msgr ] ) ) continue;
                     $s = isset( $saved_db_settings[ $msgr ] ) ? $saved_db_settings[ $msgr ] : array();

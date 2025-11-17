@@ -60,7 +60,7 @@ class mni_free_wizard {
      * Return active messengers from DB (fallback to eitaa)
      */
     public function get_active_messengers() {
-        return get_option( 'mni_free_active_messengers', [ 'eitaa' ] );
+        return get_option( 'mni_free_messengers', [ 'eitaa' ] );
     }
 
     /**
@@ -75,7 +75,7 @@ class mni_free_wizard {
      * returns e.g. [ 'eitaa' => ['token'=>'','channel'=>''], ... ]
      */
     public function get_messenger_settings_from_db() {
-        return (array) get_option( 'mni_free_messenger_settings', [] );
+        return (array) get_option( 'mni_free_settings', [] );
     }
 
     /**
@@ -125,7 +125,7 @@ class mni_free_wizard {
         }
 
         // Save active messengers to option
-        update_option( 'mni_free_active_messengers', $selected );
+        update_option( 'mni_free_messengers', $selected );
 
         // Actions
         $enabled_actions = array();
@@ -156,7 +156,7 @@ class mni_free_wizard {
         }
 
         // Persist messenger settings
-        update_option( 'mni_free_messenger_settings', $clean_settings );
+        update_option( 'mni_free_settings', $clean_settings );
 
         // Redirect back with success
         $redirect = add_query_arg( 'saved', '1', admin_url( 'admin.php?page=mni_free_wizard' ) );

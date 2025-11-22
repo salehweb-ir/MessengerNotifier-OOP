@@ -1,54 +1,58 @@
 <?php
-if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
-}
-
-/* send text message to eitaa
- * token = Eitaa API token
- * channel_id = numeral channel idate
- * message = message sent to Eitaa
- * hashtag = sent message type (test, message, order)
+/**
+ * Send text message to Eitaa (OOP version)
+ *
+ * @param string $message   The message text
+ * @param string $hashtag   Message hashtag (test, message, order)
+ *
+ * @return array            Success/error response
  */
-function messengernotifier_send_text_message($token, $channel_id, $message, $hashtag) {
-    $url = "https://eitaayar.ir/api/".$token."/sendMessage";
+public function send_text_message( string $message, string $hashtag = '' ) : array {
 
-    $post_fields = array(
-        'chat_id' => $channel_id,
-        'text' => $message .'
-		
-		'. $hashtag,
-        'parse_mode' => 'HTML'
-    );
+    if ( empty( $this->api_token ) || empty( $this->channel_id ) ) {
+        return [
+            'success' => false,
+            'error'   => 'Eitaa API token or channel ID is missing.',
+        ];
+    }
 
-    $args = array(
+    // Build API URL exactly like procedural version
+    $url = "https://eitaayar.ir/api/{$this->api_token}/sendMessage";
+
+    // Combine message and hashtag
+    $final_message = trim( $message . "\n\n" . $hashtag );
+
+    $post_fields = [
+        'chat_id'    => $this->channel_id,
+        'text'       => $final_message,
+        'parse_mode' => 'HTML',
+    ];
+
+    $args = [
         'body'    => $post_fields,
-        'timeout' => 45, // set wait time to avoid timeout
-        'headers' => array(
-        'Content-Type' => 'application/x-www-form-urlencoded'
-        ),
-    );
+        'timeout' => 45,
+        'headers' => [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ],
+    ];
 
-    $response = wp_remote_post($url, $args);
+    $response = wp_remote_post( $url, $args );
 
-    // check error 
-    if (is_wp_error($response)) {
+    // Check error
+    if ( is_wp_error( $response ) ) {
         return [
             'success' => false,
             'error'   => $response->get_error_message(),
         ];
     }
 
-    // retrieve response code and body from API
-    $http_code = wp_remote_retrieve_response_code($response);
-    $response_body = wp_remote_retrieve_body($response);
+    $http_code = wp_remote_retrieve_response_code( $response );
+    $response_body = wp_remote_retrieve_body( $response );
 
-    // set API response log
-	return [
-			'success' => $http_code == 200,
-			'error'    => $response_body,
-		];
+    // Match procedural plugin result structure:
+    return [
+        'success' => ( $http_code == 200 ),
+        'error'   => $response_body,
+    ];
 }
-
-// this is procedural file
-
 ?>

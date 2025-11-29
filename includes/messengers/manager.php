@@ -49,7 +49,7 @@ class mni_free_messenger_manager {
         $results = [];
 
         foreach ( $this->active_messengers as $id => $messenger ) {
-            if ( method_exists( $messenger, 'send_message' ) ) {
+            if ( method_exists( $messenger, 'send_text_message' ) ) {
                 $results[$id] = $messenger->send_message( $text );
             }
         }

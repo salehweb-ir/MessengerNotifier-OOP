@@ -1,64 +1,90 @@
 <?php
 namespace MessengerNotifier\Messengers;
 
-if (!defined('ABSPATH')) {
+if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class Eitaa implements MessengerInterface
-{
-    private $token;
-    private $channel_id;
+require_once MNI_FREE_PATH . 'includes/traits/singleton.php';
 
-    public function __construct($settings = [])
-    {
-        $this->token      = isset($settings['token']) ? sanitize_text_field($settings['token']) : '';
-        $this->channel_id = isset($settings['channel_id']) ? sanitize_text_field($settings['channel_id']) : '';
+class Eitaa implements MessengerInterface {
+
+    use \mni_singleton;
+
+    /**
+     * Messenger unique ID
+     */
+    public function get_id(): string {
+        return 'eitaa';
     }
 
     /**
-     * Send a text message to Eitaa API
+     * Human-readable name
      */
-    public function send_message($message, $hashtag = '')
-    {
-        if (empty($this->token) || empty($this->channel_id)) {
+    public function get_name(): string {
+        return 'Eitaa';
+    }
+
+    /**
+     * Check if Eitaa is configured correctly
+     */
+        public function is_configured(): bool {
+
+            $settings = get_option( 'mni_free_settings', [] );
+
+            return (
+                isset( $settings['eitaa']['token'], $settings['eitaa']['channel'] )
+                && $settings['eitaa']['token'] !== ''
+                && $settings['eitaa']['channel'] !== ''
+            );
+        }
+
+    /**
+     * Send message to Eitaa
+     */
+    public function send( string $message, string $type = '' ): array {
+
+        if ( ! $this->is_configured() ) {
             return [
                 'success' => false,
-                'error'   => 'Eitaa token or channel ID is missing.'
+                'error'   => 'Eitaa is not configured.',
             ];
         }
 
-        $url = "https://eitaayar.ir/api/" . $this->token . "/sendMessage";
+        $settings = get_option( 'mni_free_settings', [] );
 
-        $post_fields = [
-            'chat_id'    => $this->channel_id,
-            'text'       => $message . "\n\n" . $hashtag,
-            'parse_mode' => 'HTML'
+        $token      = $settings['eitaa']['token'];
+        $channel_id = $settings['eitaa']['channel'];
+
+        $url = "https://eitaayar.ir/api/{$token}/sendMessage";
+
+        $body = [
+            'chat_id'    => $channel_id,
+            'text'       => $message . ( $type ? "\n\n#" . $type : '' ),
+            'parse_mode' => 'HTML',
         ];
 
-        $args = [
-            'body'    => $post_fields,
+        $response = wp_remote_post( $url, [
+            'body'    => $body,
             'timeout' => 45,
             'headers' => [
-                'Content-Type' => 'application/x-www-form-urlencoded'
+                'Content-Type' => 'application/x-www-form-urlencoded',
             ],
-        ];
+        ] );
 
-        $response = wp_remote_post($url, $args);
-
-        if (is_wp_error($response)) {
+        if ( is_wp_error( $response ) ) {
             return [
                 'success' => false,
                 'error'   => $response->get_error_message(),
             ];
         }
 
-        $http_code      = wp_remote_retrieve_response_code($response);
-        $response_body  = wp_remote_retrieve_body($response);
+        $code = wp_remote_retrieve_response_code( $response );
 
         return [
-            'success' => $http_code == 200,
-            'error'   => $response_body,
+            'success' => $code === 200,
+            'code'    => $code,
+            'body'    => wp_remote_retrieve_body( $response ),
         ];
     }
 }

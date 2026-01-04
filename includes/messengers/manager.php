@@ -2,72 +2,56 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once MNI_FREE_PATH . 'includes/traits/singleton.php';
+require_once MNI_FREE_PATH . 'includes/messengers/MessengerInterface.php';
+require_once MNI_FREE_PATH . 'includes/messengers/eitaa.php';
+
+use MessengerNotifier\Messengers\MessengerInterface;
+use MessengerNotifier\Messengers\Eitaa;
 
 class mni_free_messenger_manager {
     use mni_singleton;
 
-    /** @var array Loaded active messenger classes */
-    private $active_messengers = [];
+    /**
+     * @var MessengerInterface[]
+     */
+    private $messengers = [];
 
     private function __construct() {
-        $this->load_active_messengers();
+        $this->load_messengers();
     }
 
-    /**
-     * Load messenger classes based on wizard settings (step 1)
-     */
-    private function load_active_messengers() {
-        $messengers = get_option( 'mni_free_active_messengers', [] );
+    private function load_messengers() : void {
 
-        if ( empty( $messengers ) || ! is_array( $messengers ) ) {
+        $active = get_option( 'mni_free_messengers', [] );
+
+        if ( ! is_array( $active ) ) {
             return;
         }
 
-        foreach ( $messengers as $messenger_id ) {
-            $class_file = MNI_FREE_PATH . "includes/messengers/{$messenger_id}.php";
+        $class_map = [
+            'eitaa' => Eitaa::class,
+        ];
 
-            if ( file_exists( $class_file ) ) {
-                require_once $class_file;
+        foreach ( $active as $messenger_id ) {
 
-                $class_name = "mni_free_messenger_{$messenger_id}";
-
-                if ( class_exists( $class_name ) ) {
-                    $this->active_messengers[$messenger_id] = $class_name::instance();
-                }
+            if ( isset( $class_map[ $messenger_id ] ) ) {
+                $class = $class_map[ $messenger_id ];
+                $this->messengers[ $messenger_id ] = $class::instance();
             }
         }
+
+        error_log( print_r( $this->messengers, true ) );
+
     }
 
-    /**
-     * Send message to all active messengers
-     */
-    public function send( string $text ) : array {
-        if ( empty( $this->active_messengers ) ) {
-            return [ 'error' => 'No active messengers.' ];
-        }
+    public function send( string $message, string $type = '' ) : array {
 
         $results = [];
 
-        foreach ( $this->active_messengers as $id => $messenger ) {
-            if ( method_exists( $messenger, 'send_text_message' ) ) {
-                $results[$id] = $messenger->send_message( $text );
-            }
+        foreach ( $this->messengers as $id => $messenger ) {
+            $results[ $id ] = $messenger->send( $message, $type );
         }
 
         return $results;
-    }
-
-    /**
-     * Get settings for all active messengers (used by wizard)
-     */
-    public function get_active_messengers() : array {
-        return $this->active_messengers;
-    }
-
-    /**
-     * Check if messenger exists
-     */
-    public function get_messenger( string $id ) {
-        return $this->active_messengers[$id] ?? false;
     }
 }

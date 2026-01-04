@@ -20,6 +20,23 @@ class mni_free_admin {
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
     }
 
+    private function register_test_hook() {
+
+        add_action( 'admin_init', function () {
+
+            if (
+                isset( $_GET['mni_test_message'] ) &&
+                current_user_can( 'manage_options' )
+            ) {
+
+                $result = mni_free_messenger_manager::instance()
+                    ->send( 'سلام! این یک پیام تست است 🚀', '#test' );
+
+                error_log( print_r( $result, true ) );
+            }
+        });
+    }
+
     /**
      * Register plugin menu & pages.
      */

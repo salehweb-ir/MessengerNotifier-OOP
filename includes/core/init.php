@@ -27,6 +27,12 @@ class mni_free_init {
             if ( file_exists( MNI_FREE_PATH . 'includes/admin/settings.php' ) ) {
                 require_once MNI_FREE_PATH . 'includes/admin/settings.php';
             }
+            
+            // Settings page (if exists)
+            if ( file_exists( MNI_FREE_PATH . 'includes/messengers/manager.php' ) ) {
+                require_once MNI_FREE_PATH . 'includes/messengers/manager.php';
+            }
+
         } else {
             require_once MNI_FREE_PATH . 'includes/frontend/contact.php';
             mni_free_contact::instance();

@@ -40,8 +40,6 @@ class mni_free_messenger_manager {
             }
         }
 
-        error_log( print_r( $this->messengers, true ) );
-
     }
 
     public function send( string $message, string $type = '' ) : array {

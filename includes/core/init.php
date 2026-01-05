@@ -39,14 +39,12 @@ class mni_free_init {
         }
 
         // Load feature hooks
-        // $this->load_features();
+        $this->load_features();
     }
 
     private function load_features() {
         require_once MNI_FREE_PATH . 'includes/features/comment.php';
         mni_free_feature_comment::instance();
-
-        error_log('Comment.php loaded');
 
         require_once MNI_FREE_PATH . 'includes/features/newuser.php';
         require_once MNI_FREE_PATH . 'includes/features/woocommerce/ordercompleted.php';

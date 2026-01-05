@@ -4,7 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once MNI_FREE_PATH . 'includes/traits/singleton.php';
 require_once MNI_FREE_PATH . 'includes/messengers/manager.php';
-
 class mni_free_feature_comment {
     use mni_singleton;
 
@@ -30,12 +29,9 @@ class mni_free_feature_comment {
         $message = $this->build_message( $comment, $post, $comment_approved );
 
         // Send via Messenger Manager
-        mni_free_messenger_manager::instance()->send(
-            $message,
-            __( '#comment', 'messengernotifier' )
-        );
+        $manager = mni_free_messenger_manager::instance();
+        $manager->send($message, 'comment');
 
-        error_log($message);
     }
 
     /**
@@ -84,20 +80,18 @@ class mni_free_feature_comment {
             $message .= "✅ " . sprintf(
                 __( 'Approve: %s', 'messengernotifier' ),
                 admin_url( "comment.php?action=approve&c={$comment->comment_ID}" )
-            ) . "\n";
+            ) . "\n\n";
 
             $message .= "🚫 " . sprintf(
                 __( 'Mark as Spam: %s', 'messengernotifier' ),
                 admin_url( "comment.php?action=spam&c={$comment->comment_ID}" )
-            ) . "\n";
+            ) . "\n\n";
 
             $message .= "🗑️ " . sprintf(
                 __( 'Trash: %s', 'messengernotifier' ),
                 admin_url( "comment.php?action=trash&c={$comment->comment_ID}" )
-            ) . "\n";
+            ) . "\n\n";
         }
-
-        error_log($message);
 
         return $message;
     }

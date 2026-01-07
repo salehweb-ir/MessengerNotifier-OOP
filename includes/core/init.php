@@ -47,7 +47,10 @@ class mni_free_init {
         mni_free_feature_comment::instance();
 
         require_once MNI_FREE_PATH . 'includes/features/newuser.php';
+        
         require_once MNI_FREE_PATH . 'includes/features/woocommerce/ordercompleted.php';
+        mni_free_feature_ordercompleted::instance();
+
     }
 
     public function maybe_redirect_to_wizard() {

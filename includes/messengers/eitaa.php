@@ -64,11 +64,13 @@ class Eitaa implements MessengerInterface {
             'parse_mode' => 'HTML',
         ];
 
+        error_log( $body['text'] );
+
         $response = wp_remote_post( $url, [
             'body'    => $body,
             'timeout' => 45,
             'headers' => [
-                'Content-Type' => 'application/x-www-form-urlencoded',
+            'Content-Type' => 'application/x-www-form-urlencoded',
             ],
         ] );
 

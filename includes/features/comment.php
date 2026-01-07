@@ -1,13 +1,20 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-
 require_once MNI_FREE_PATH . 'includes/traits/singleton.php';
 require_once MNI_FREE_PATH . 'includes/messengers/manager.php';
+
 class mni_free_feature_comment {
     use mni_singleton;
 
+    private $enabled = false;
+
     private function __construct() {
+
+        $features = get_option( 'mni_free_features', [] );
+
+        $this->enabled = (empty( $features['comment'] ) ? false : true);
+
         add_action( 'comment_post', [ $this, 'handle_new_comment' ], 10, 2 );
     }
 
@@ -30,6 +37,9 @@ class mni_free_feature_comment {
 
         // Send via Messenger Manager
         $manager = mni_free_messenger_manager::instance();
+        if (! $message) {
+            return;
+        }
         $manager->send($message, 'comment');
 
     }
@@ -54,6 +64,7 @@ class mni_free_feature_comment {
         ) . "\n\n";
 
         $message .= "🔔 " . __( 'A new comment has been posted on your site.', 'messengernotifier' ) . "\n\n";
+
         $message .= "👤 " . sprintf(
             __( 'Author: %s', 'messengernotifier' ),
             $comment->comment_author
@@ -65,12 +76,14 @@ class mni_free_feature_comment {
         ) . "\n\n";
 
         $message .= "💬 " . __( 'Comment:', 'messengernotifier' ) . "\n";
-        $message .= wp_strip_all_tags( $comment->comment_content ) . "\n\n";
+        $message .= esc_html( $comment->comment_content ) . "\n\n";
 
-        $message .= "🔗 " . sprintf(
-            __( 'View Comment: %s', 'messengernotifier' ),
-            get_comment_link( $comment )
-        ) . "\n\n";
+        // ✅ HTML link (must NOT be escaped)
+        $message .= sprintf(
+            '🔗 %s' . "\n\n",
+            esc_url( get_comment_link( $comment ) ),
+            __( 'View Comment', 'messengernotifier' )
+        );
 
         // Moderation actions for pending comments
         if ( (int) $comment_approved === 0 ) {
@@ -91,6 +104,12 @@ class mni_free_feature_comment {
                 __( 'Trash: %s', 'messengernotifier' ),
                 admin_url( "comment.php?action=trash&c={$comment->comment_ID}" )
             ) . "\n\n";
+        }
+
+        // 🔴 Feature disabled → log message only
+        if ( ! $this->enabled ) {
+            error_log( '[MNI Comment Disabled] ' . $message );
+            return false;
         }
 
         return $message;

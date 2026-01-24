@@ -16,6 +16,10 @@ class mni_free_admin {
      * Constructor.
      */
     private function __construct() {
+        
+        require_once MNI_FREE_PATH . 'includes/admin/wizard-service.php';
+        require_once MNI_FREE_PATH . 'includes/admin/wizard-controller.php';
+
         add_action( 'admin_menu', [ $this, 'register_menu' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
     }

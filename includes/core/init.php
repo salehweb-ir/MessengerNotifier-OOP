@@ -19,9 +19,9 @@ class mni_free_init {
             require_once MNI_FREE_PATH . 'includes/admin/admin.php';
             mni_free_admin::instance();
 
-            // Wizard (THIS IS THE IMPORTANT PART)
-            require_once MNI_FREE_PATH . 'includes/admin/wizard.php';
-            mni_free_wizard::instance();
+            // // Wizard (THIS IS THE IMPORTANT PART)
+            // require_once MNI_FREE_PATH . 'includes/admin/wizard-controller.php';
+            // new MNI_Free_Wizard_Controller();
 
             // Settings page (if exists)
             if ( file_exists( MNI_FREE_PATH . 'includes/admin/settings.php' ) ) {

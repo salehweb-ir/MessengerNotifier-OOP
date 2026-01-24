@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /** @var mni_free_wizard $wizard */
-$wizard = mni_free_wizard::instance();
+$wizard = new MNI_Free_Wizard_Service();
 $available = $wizard->get_messengers();
 $saved_db_settings = $wizard->get_messenger_settings_from_db();
 $available_actions = $wizard->get_actions();
@@ -20,7 +20,7 @@ $available_actions = $wizard->get_actions();
     <form id="mni-wizard-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
         <input type="hidden" id="mni_selected_messengers" name="mni_selected_messengers" value="">
         <input type="hidden" name="action" value="mni_free_save_wizard">
-        <?php wp_nonce_field( 'mni_free_wizard_save', 'mni_wizard_nonce' ); ?>
+        <?php wp_nonce_field( 'mni_free_wizard_save' ); ?>
 
         <!-- STEP 1 -->
         <div class="mni-step" data-step="1">
@@ -34,7 +34,7 @@ $available_actions = $wizard->get_actions();
                                class="mni-messenger-check"
                                value="<?php echo esc_attr( $id ); ?>"
                                <?php checked( in_array( $id, (array) get_option( 'mni_free_messengers', array( 'eitaa' ) ), true ) ); ?>>
-                        <?php echo esc_html( $info['label'] ); ?>
+                        <?php echo esc_html( $info['label'] );?>
                     </label>
                 <?php endforeach; ?>
             </div>

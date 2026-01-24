@@ -14,10 +14,41 @@ class mni_free_contact {
 
     private function __construct() {
         // Register shortcode
-        add_shortcode( 'mni_free_contact_form', [ $this, 'render_contact_form' ] );
+        add_shortcode( 'messengernotifier_default_template', [ $this, 'render_contact_form' ] );
 
         // Handle form submission
         add_action( 'init', [ $this, 'handle_form_submission' ] );
+
+        // Handle style files
+        add_action( 'enqueue_scripts', [ $this, 'enqueue_assets' ] );
+    }
+
+    /**
+     * Enqueue form CSS/JS.
+     */
+    public function enqueue_assets() {
+
+        error_log('contact style enqeued');
+
+        wp_enqueue_style(
+            'mni-free-form',
+            MNI_FREE_URL . 'assets/css/admin.css',
+            [],
+            MNI_FREE_VERSION
+        );
+
+        wp_localize_script( 'mni-form-handle', 'mniForm', [
+            'ajaxurl' => admin_url( 'ajax.php' ),
+            'nonce'   => wp_create_nonce( 'mni_form_nonce' ),
+        ] );
+
+        wp_enqueue_script(
+            'mni-free-form',
+            MNI_FREE_URL . 'assets/js/form.js',
+            [ 'jquery' ],
+            MNI_FREE_VERSION,
+            true
+        );
     }
 
     /**

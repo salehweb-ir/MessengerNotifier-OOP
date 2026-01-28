@@ -23,7 +23,8 @@ $available_actions = $wizard->get_actions();
         <?php wp_nonce_field( 'mni_free_wizard_save' ); ?>
 
         <!-- STEP 1 -->
-        <div class="mni-step" data-step="1">
+        <div class="mni-wizard-step is-active" data-require="mni-messenger-checkbox" data-step="1">
+
             <h2><?php esc_html_e( 'General — Select Messengers', 'messengernotifier' ); ?></h2>
             <p><?php esc_html_e( 'Choose which messengers to activate. At least one must remain active.', 'messengernotifier' ); ?></p>
 
@@ -48,12 +49,15 @@ $available_actions = $wizard->get_actions();
             </div>
 
             <div class="mni-tab-buttons">
-                <button type="button" class="button button-primary mni-next-step"><?php esc_html_e( 'Next', 'messengernotifier' ); ?></button>
+                <button type="button" class="button button-primary mni-next-step" id="mni-wizard-next">
+                    <?php esc_html_e( 'Next', 'messengernotifier' ); ?>
+                </button>
             </div>
         </div>
 
         <!-- STEP 2 -->
-        <div class="mni-step" data-step="2" style="display:none;">
+         <div class="mni-wizard-step" data-require="mni-action-checkbox" data-step="2" style="display:none;">
+
             <h2><?php esc_html_e( 'Actions', 'messengernotifier' ); ?></h2>
             <p><?php esc_html_e( 'Choose which WordPress events should send notifications.', 'messengernotifier' ); ?></p>
 
@@ -78,8 +82,12 @@ $available_actions = $wizard->get_actions();
             </div>
 
             <div class="mni-tab-buttons">
-                <button type="button" class="button mni-prev-step"><?php esc_html_e( 'Back', 'messengernotifier' ); ?></button>
-                <button type="button" class="button button-primary mni-next-step"><?php esc_html_e( 'Next', 'messengernotifier' ); ?></button>
+                <button type="button" class="button mni-prev-step" id="mni-wizard-prev">
+                    <?php esc_html_e( 'Back', 'messengernotifier' ); ?>
+                </button>
+                <button type="button" class="button button-primary mni-next-step" id="mni-wizard-next">
+                    <?php esc_html_e( 'Next', 'messengernotifier' ); ?>
+                </button>
             </div>
         </div>
 

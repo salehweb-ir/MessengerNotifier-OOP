@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // get checked messengers
     function getSelectedMessengers() {
         var list = [];
-        document.querySelectorAll('.mni-messenger-check:checked').forEach(function (ch) {
+        document.querySelectorAll('.mni-messenger-checkbox:checked').forEach(function (ch) {
             list.push(ch.value);
         });
         return list;

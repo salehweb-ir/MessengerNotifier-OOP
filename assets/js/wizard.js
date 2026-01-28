@@ -1,187 +1,283 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* ======================================================
-     * Helpers
-     * ====================================================== */
-    const qs  = (s, p = document) => p.querySelector(s);
-    const qsa = (s, p = document) => [...p.querySelectorAll(s)];
+        // Steps
+    var currentStep = 1;
+    var totalSteps = document.querySelectorAll('.mni-step').length || 3;
 
-    const steps = qsa('.mni-wizard-step');
-    const nextBtn = qs('#mni-wizard-next');
-    const prevBtn = qs('#mni-wizard-prev');
-
-    let currentStep = parseInt(localStorage.getItem('mni_wizard_step') || '0', 10);
-
-    /* ======================================================
-     * Wizard Navigation
-     * ====================================================== */
-    function showStep(index) {
-        steps.forEach((step, i) => {
-            step.classList.toggle('is-active', i === index);
+    function showStep(n) {
+        document.querySelectorAll('.mni-step').forEach(function (el) {
+            el.style.display = (parseInt(el.dataset.step, 10) === n) ? '' : 'none';
         });
-
-        prevBtn.style.display = index === 0 ? 'none' : 'inline-block';
-        nextBtn.textContent = index === steps.length - 1 ? 'Finish' : 'Next';
-
-        localStorage.setItem('mni_wizard_step', index);
-        currentStep = index;
-        validateStep();
+        currentStep = n;
     }
 
-    nextBtn.addEventListener('click', function () {
-        if (!validateStep()) return;
-
-        if (currentStep < steps.length - 1) {
-            showStep(currentStep + 1);
-        } else {
-            qs('#mni-wizard-form').submit();
-        }
-    });
-
-    prevBtn.addEventListener('click', function () {
-        if (currentStep > 0) {
-            showStep(currentStep - 1);
-        }
-    });
-
-    /* ======================================================
-     * Validation
-     * ====================================================== */
-    function validateStep() {
-        const step = steps[currentStep];
-        const requiredGroup = step.dataset.require;
-
-        if (!requiredGroup) return true;
-
-        const checked = qsa(`.${requiredGroup}:checked`).length > 0;
-        nextBtn.disabled = !checked;
-        return checked;
+    // get checked messengers
+    function getSelectedMessengers() {
+        var list = [];
+        document.querySelectorAll('.mni-messenger-check:checked').forEach(function (ch) {
+            list.push(ch.value);
+        });
+        return list;
     }
 
-    /* ======================================================
-     * Checkbox Utilities
-     * ====================================================== */
-    function enforceOneChecked(checkboxes) {
-        const checked = checkboxes.filter(cb => cb.checked);
-
-        checkboxes.forEach(cb => cb.disabled = false);
-
+    // enforce at least one messenger (disable the last checked)
+    function enforceOneChecked() {
+        var checks = Array.from(document.querySelectorAll('.mni-messenger-check'));
+        var checked = checks.filter(function (c) { return c.checked; });
+        checks.forEach(function (c) { c.disabled = false; });
         if (checked.length === 1) {
             checked[0].disabled = true;
         }
     }
 
-    function syncSelectAll(selectAll, checkboxes) {
-        const checkedCount = checkboxes.filter(cb => cb.checked).length;
-        selectAll.checked = checkedCount === checkboxes.length;
-        selectAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+    // when moving to step 3, store selected messengers in hidden field and build tabs
+    function buildMessengerTabsFromSelection() {
+        var list = getSelectedMessengers();
+        var hidden = document.getElementById('mni_selected_messengers');
+        hidden.value = JSON.stringify(list);
+
+        var container = document.getElementById('mni_messenger_tabs_container');
+        if (!container) return;
+
+        // remove existing dynamic panels
+        // But keep DB fallback panels as baseline; we will hide those not selected.
+        // First hide all panels
+        container.querySelectorAll('.mni-messenger-panel').forEach(function (panel) {
+            panel.style.display = 'none';
+        });
+
+        // For every selected messenger, try to find an existing panel. If not exist, create one.
+        list.forEach(function (m) {
+            var panel = container.querySelector('.mni-messenger-panel[data-msgr="' + m + '"]');
+            if (panel) {
+                panel.style.display = 'block';
+                return;
+            }
+
+            // create dynamic panel (no saved values)
+            var panelEl = document.createElement('div');
+            panelEl.className = 'mni-messenger-panel';
+            panelEl.dataset.msgr = m;
+
+            var title = document.createElement('h3');
+            title.textContent = m.charAt(0).toUpperCase() + m.slice(1) + ' Settings';
+            panelEl.appendChild(title);
+
+            var labelToken = document.createElement('label');
+            labelToken.textContent = 'API Token';
+            panelEl.appendChild(labelToken);
+
+            var inputToken = document.createElement('input');
+            inputToken.type = 'text';
+            inputToken.name = 'messenger_settings[' + m + '][token]';
+            inputToken.className = 'mni-input';
+            panelEl.appendChild(inputToken);
+
+            var labelChannel = document.createElement('label');
+            labelChannel.textContent = 'Channel ID';
+            panelEl.appendChild(labelChannel);
+
+            var inputChannel = document.createElement('input');
+            inputChannel.type = 'text';
+            inputChannel.name = 'messenger_settings[' + m + '][channel]';
+            inputChannel.className = 'mni-input';
+            panelEl.appendChild(inputChannel);
+
+            var labelTest = document.createElement('label');
+            labelTest.textContent = 'Test Message (optional)';
+            panelEl.appendChild(labelTest);
+
+            var textarea = document.createElement('textarea');
+            textarea.name = 'messenger_settings[' + m + '][test]';
+            textarea.className = 'mni-textarea';
+            panelEl.appendChild(textarea);
+
+            var p = document.createElement('p');
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'button mni-test-api';
+            btn.dataset.msgr = m;
+            btn.textContent = 'Test API';
+            p.appendChild(btn);
+
+            var span = document.createElement('span');
+            span.className = 'mni-test-result';
+            span.id = 'mni-test-' + m;
+            p.appendChild(span);
+
+            panelEl.appendChild(p);
+
+            container.appendChild(panelEl);
+        });
     }
 
-    /* ======================================================
-     * Messengers
-     * ====================================================== */
-    const messengerAll = qs('#mni-check-all-messengers');
-    const messengers  = qsa('.mni-messenger-checkbox');
+    // init enforce
+    document.querySelectorAll('.mni-messenger-check').forEach(function (c) {
+        c.addEventListener('change', enforceOneChecked);
+    });
+    enforceOneChecked();
 
-    messengers.forEach(cb => {
-        cb.addEventListener('change', () => {
-            enforceOneChecked(messengers);
-            syncSelectAll(messengerAll, messengers);
-            validateStep();
-            saveState();
+    // Next buttons
+    document.querySelectorAll('.mni-next-step').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            if (currentStep === 1) {
+                var sel = getSelectedMessengers();
+                if (!sel || sel.length === 0) {
+                    alert('Please select at least one messenger.');
+                    return;
+                }
+                // prepare step 3 content
+                buildMessengerTabsFromSelection();
+            }
+            if (currentStep < totalSteps) showStep(currentStep + 1);
+            window.scrollTo(0,0);
         });
     });
 
-    if (messengerAll) {
-        messengerAll.addEventListener('change', () => {
-            if (!messengerAll.checked) {
-                messengers.forEach((cb, i) => {
-                    cb.checked = i === 0;
-                    cb.disabled = i === 0;
-                });
-            } else {
-                messengers.forEach(cb => {
-                    cb.checked = true;
-                    cb.disabled = false;
-                });
-            }
-            validateStep();
-            saveState();
+    // Prev buttons
+    document.querySelectorAll('.mni-prev-step').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            if (currentStep > 1) showStep(currentStep - 1);
+            window.scrollTo(0,0);
         });
-    }
+    });
 
-    enforceOneChecked(messengers);
-    syncSelectAll(messengerAll, messengers);
+    // Test API click (delegated)
+    document.addEventListener('click', function (e) {
+        if (e.target && e.target.matches('.mni-test-api')) {
+            var msgr = e.target.dataset.msgr;
+            var panel = document.querySelector('.mni-messenger-panel[data-msgr="' + msgr + '"]');
+            if (!panel) return;
+            var token = panel.querySelector('input[name="messenger_settings[' + msgr + '][token]"]')?.value || '';
+            var channel = panel.querySelector('input[name="messenger_settings[' + msgr + '][channel]"]')?.value || '';
+            var testmsg = panel.querySelector('textarea[name="messenger_settings[' + msgr + '][test]"]')?.value || '';
 
-    /* ======================================================
-     * Actions (WooCommerce aware)
-     * ====================================================== */
-    const actionAll = qs('#mni-check-all-actions');
-    const actions  = qsa('.mni-action-checkbox');
-    const wcActive = document.body.classList.contains('mni-wc-active');
+            var resultEl = document.getElementById('mni-test-' + msgr);
+            if (resultEl) resultEl.textContent = 'Testing...';
 
-    actions.forEach(cb => {
-        if (!wcActive && cb.dataset.requires === 'woocommerce') {
-            cb.checked = false;
-            cb.disabled = true;
-            cb.closest('label').classList.add('is-disabled');
+            // Send AJAX to admin-ajax endpoint (wp_ajax_mni_free_test_api should exist)
+            var data = new FormData();
+            data.append('action', 'mni_free_test_api');
+            data.append('nonce', mniWizard.nonce); // we will localize this below
+            data.append('messenger', msgr);
+            data.append('token', token);
+            data.append('channel', channel);
+            data.append('message', testmsg);
+
+            fetch(mniWizard.ajaxurl, {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: data
+            })
+            .then(function(res){ return res.json(); })
+            .then(function(json){
+                if ( json && json.success ) {
+                    resultEl.textContent = json.data.message || 'OK';
+                } else {
+                    resultEl.textContent = (json && json.data && json.data.message) ? json.data.message : 'Error';
+                }
+            })
+            .catch(function(){
+                resultEl.textContent = 'AJAX error';
+            });
         }
+    });
 
-        cb.addEventListener('change', () => {
-            enforceOneChecked(actions.filter(a => !a.disabled));
-            syncSelectAll(actionAll, actions.filter(a => !a.disabled));
-            validateStep();
-            saveState();
+    // initial show
+    showStep(1);
+
+
+    /* ===============================
+     * Messengers
+     * =============================== */
+
+    const messengerCheckboxes = Array.from(
+        document.querySelectorAll('.mni-messenger-checkbox')
+    );
+
+    const checkAllMessengers = document.getElementById('mni-check-all-messengers');
+
+    function getCheckedMessengers() {
+        return messengerCheckboxes.filter(cb => cb.checked);
+    }
+
+    function syncCheckAllMessengers() {
+        if (!checkAllMessengers || messengerCheckboxes.length === 0) return;
+        checkAllMessengers.checked =
+            messengerCheckboxes.every(cb => cb.checked);
+    }
+
+    function enforceAtLeastOneMessenger(changedCheckbox) {
+        const checked = getCheckedMessengers();
+
+        if (checked.length === 1) {
+            checked[0].disabled = true;
+        } else {
+            messengerCheckboxes.forEach(cb => cb.disabled = false);
+        }
+    }
+
+    // Init state
+    enforceAtLeastOneMessenger();
+    syncCheckAllMessengers();
+
+    // Individual messenger change
+    messengerCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function () {
+            enforceAtLeastOneMessenger(this);
+            syncCheckAllMessengers();
         });
     });
 
-    if (actionAll) {
-        actionAll.addEventListener('change', () => {
-            const enabled = actions.filter(a => !a.disabled);
+    // Select all messengers
+    if (checkAllMessengers) {
+        checkAllMessengers.addEventListener('change', function () {
 
-            if (!actionAll.checked) {
-                enabled.forEach((cb, i) => {
-                    cb.checked = i === 0;
-                    cb.disabled = i === 0;
-                });
-            } else {
-                enabled.forEach(cb => {
-                    cb.checked = true;
-                    cb.disabled = false;
-                });
+            if (!this.checked && getCheckedMessengers().length === 1) {
+                this.checked = true;
+                return;
             }
 
-            validateStep();
-            saveState();
+            messengerCheckboxes.forEach(cb => {
+                cb.checked = this.checked;
+                cb.disabled = false;
+            });
+
+            enforceAtLeastOneMessenger();
         });
     }
 
-    /* ======================================================
-     * Local Storage Persistence
-     * ====================================================== */
-    function saveState() {
-        const data = {
-            messengers: messengers.filter(c => c.checked).map(c => c.value),
-            actions: actions.filter(c => c.checked).map(c => c.value)
-        };
-        localStorage.setItem('mni_wizard_data', JSON.stringify(data));
+    /* ===============================
+     * Actions
+     * =============================== */
+
+    const actionCheckboxes = Array.from(
+        document.querySelectorAll('.mni-action-checkbox')
+    );
+
+    const checkAllActions = document.getElementById('mni-check-all-actions');
+
+    function syncCheckAllActions() {
+        if (!checkAllActions || actionCheckboxes.length === 0) return;
+        checkAllActions.checked =
+            actionCheckboxes.every(cb => cb.checked);
     }
 
-    function restoreState() {
-        const data = JSON.parse(localStorage.getItem('mni_wizard_data') || '{}');
+    // Init state
+    syncCheckAllActions();
 
-        messengers.forEach(cb => {
-            cb.checked = data.messengers?.includes(cb.value);
-        });
+    // Individual action change
+    actionCheckboxes.forEach(cb => {
+        cb.addEventListener('change', syncCheckAllActions);
+    });
 
-        actions.forEach(cb => {
-            if (!cb.disabled) {
-                cb.checked = data.actions?.includes(cb.value);
-            }
+    // Select all actions
+    if (checkAllActions) {
+        checkAllActions.addEventListener('change', function () {
+            actionCheckboxes.forEach(cb => {
+                cb.checked = this.checked;
+            });
         });
     }
-
-    restoreState();
-    showStep(currentStep);
 
 });

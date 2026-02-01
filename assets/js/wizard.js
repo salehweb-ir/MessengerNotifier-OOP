@@ -121,11 +121,13 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.mni-next-step').forEach(function (btn) {
         btn.addEventListener('click', function () {
             if (currentStep === 1) {
+                /*
+                Alert if no messenger is selected
                 var sel = getSelectedMessengers();
                 if (!sel || sel.length === 0) {
                     alert('Please select at least one messenger.');
                     return;
-                }
+                } */
                 // prepare step 3 content
                 buildMessengerTabsFromSelection();
             }
@@ -218,13 +220,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Init state
-    enforceAtLeastOneMessenger();
+    // enforceAtLeastOneMessenger();
     syncCheckAllMessengers();
 
     // Individual messenger change
     messengerCheckboxes.forEach(cb => {
         cb.addEventListener('change', function () {
-            enforceAtLeastOneMessenger(this);
+            // enforceAtLeastOneMessenger(this);
             syncCheckAllMessengers();
         });
     });
@@ -243,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 cb.disabled = false;
             });
 
-            enforceAtLeastOneMessenger();
+            // enforceAtLeastOneMessenger();
         });
     }
 

@@ -38,7 +38,7 @@ $available_actions = $wizard->get_actions();
                 <?php foreach ( $available as $id => $info ) : ?>
                     <label>
                         <input  type="checkbox"
-                                class="mni-messenger-checkbox mni-atleast-one-check"
+                                class="mni-messenger-checkbox"
                                 name="settings[messengers][]"
                                 value="<?php echo esc_attr( $id ); ?>"
                                 <?php checked( in_array( $id, (array) get_option( 'mni_free_messengers', array( 'eitaa' ) ), true ) ); ?>>
@@ -68,7 +68,7 @@ $available_actions = $wizard->get_actions();
                 <?php foreach ( $available_actions as $act_id => $label ) : ?>
                     <label>
                         <input  type="checkbox"
-                                class="mni-action-checkbox mni-atleast-one-check"
+                                class="mni-action-checkbox"
                                 name="settings[actions][]"
                                 value="<?php echo esc_attr( $act_id ); ?>"
                                 <?php checked( in_array( $act_id, (array) get_option( 'mni_free_enabled_actions', array() ), true ) ); ?>>

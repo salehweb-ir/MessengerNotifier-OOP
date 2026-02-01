@@ -1,64 +1,59 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    /**
-     * Validate that at least ONE checkbox is checked in a step
-     */
-    function hasChecked(step) {
-        const checkboxes = step.querySelectorAll('.mni-checkbox:not(:disabled)');
-        return Array.from(checkboxes).some(cb => cb.checked);
+    const steps = document.querySelectorAll('.wizard-step');
+
+    function showStep(index) {
+        steps.forEach((step, i) => {
+            step.classList.toggle('active', i === index);
+        });
     }
 
-    /**
-     * Sync "Select All" checkbox state
-     */
+    function hasChecked(step) {
+        const boxes = step.querySelectorAll('.mni-checkbox:not(:disabled)');
+        return Array.from(boxes).some(cb => cb.checked);
+    }
+
     function syncSelectAll(step) {
         const selectAll = step.querySelector('.mni-select-all');
         if (!selectAll) return;
 
-        const checkboxes = step.querySelectorAll('.mni-checkbox:not(:disabled)');
-        if (!checkboxes.length) return;
-
-        selectAll.checked = Array.from(checkboxes).every(cb => cb.checked);
+        const boxes = step.querySelectorAll('.mni-checkbox:not(:disabled)');
+        selectAll.checked = boxes.length > 0 &&
+            Array.from(boxes).every(cb => cb.checked);
     }
 
-    /**
-     * Handle Select All click
-     */
     document.addEventListener('change', function (e) {
 
-        // Select All toggled
+        // Select All
         if (e.target.classList.contains('mni-select-all')) {
-
             const step = e.target.closest('.wizard-step');
-            if (!step) return;
-
-            const checkboxes = step.querySelectorAll('.mni-checkbox:not(:disabled)');
-            checkboxes.forEach(cb => cb.checked = e.target.checked);
+            step.querySelectorAll('.mni-checkbox:not(:disabled)')
+                .forEach(cb => cb.checked = e.target.checked);
         }
 
-        // Individual checkbox toggled
+        // Individual checkbox
         if (e.target.classList.contains('mni-checkbox')) {
-
             const step = e.target.closest('.wizard-step');
-            if (!step) return;
-
             syncSelectAll(step);
         }
     });
 
-    /**
-     * Prevent next if invalid
-     */
     document.addEventListener('click', function (e) {
 
-        if (!e.target.classList.contains('wizard-next')) return;
+        if (e.target.classList.contains('wizard-next')) {
+            const step = e.target.closest('.wizard-step');
 
-        const step = e.target.closest('.wizard-step');
-        if (!step) return;
+            if (step.dataset.require === 'checkbox' && !hasChecked(step)) {
+                alert('Please select at least one option.');
+                return;
+            }
 
-        if (step.dataset.require === 'checkbox' && !hasChecked(step)) {
-            e.preventDefault();
-            alert('Please select at least one option.');
+            showStep([...steps].indexOf(step) + 1);
+        }
+
+        if (e.target.classList.contains('wizard-prev')) {
+            const step = e.target.closest('.wizard-step');
+            showStep([...steps].indexOf(step) - 1);
         }
     });
 

@@ -23,7 +23,7 @@ $available_actions = $wizard->get_actions();
         <?php wp_nonce_field( 'mni_free_wizard_save' ); ?>
 
         <!-- STEP 1 -->
-        <div class="mni-step" data-step="1">
+        <div class="mni-step wizard-step" data-require="checkbox" data-step="1">
             <h2><?php esc_html_e( 'General — Select Messengers', 'messengernotifier' ); ?></h2>
             <p><?php esc_html_e( 'Choose which messengers to activate. At least one must remain active.', 'messengernotifier' ); ?></p>
 
@@ -31,14 +31,14 @@ $available_actions = $wizard->get_actions();
 
                 <!-- check all checkbox  -->
                 <label class="mni-check-all">
-                    <input type="checkbox" id="mni-check-all-messengers">
+                    <input type="checkbox" id="mni-select-all">
                     <?php esc_html_e( 'Select all messengers', 'messengernotifier' ); ?>
                 </label>
 
                 <?php foreach ( $available as $id => $info ) : ?>
                     <label>
                         <input  type="checkbox"
-                                class="mni-messenger-checkbox"
+                                class="mni-checkbox"
                                 name="settings[messengers][]"
                                 value="<?php echo esc_attr( $id ); ?>"
                                 <?php checked( in_array( $id, (array) get_option( 'mni_free_messengers', array( 'eitaa' ) ), true ) ); ?>>
@@ -53,7 +53,7 @@ $available_actions = $wizard->get_actions();
         </div>
 
         <!-- STEP 2 -->
-        <div class="mni-step" data-step="2" style="display:none;">
+        <div class="mni-step wizard-step" data-step="2" data-require="checkbox" style="display:none;">
             <h2><?php esc_html_e( 'Actions', 'messengernotifier' ); ?></h2>
             <p><?php esc_html_e( 'Choose which WordPress events should send notifications.', 'messengernotifier' ); ?></p>
 
@@ -61,14 +61,14 @@ $available_actions = $wizard->get_actions();
 
                 <!-- check all checkbox -->
                 <label class="mni-check-all">
-                    <input type="checkbox" id="mni-check-all-actions">
+                    <input type="checkbox" id="mni-select-all">
                     <?php esc_html_e( 'Select all actions', 'messengernotifier' ); ?>
                 </label>
 
                 <?php foreach ( $available_actions as $act_id => $label ) : ?>
                     <label>
                         <input  type="checkbox"
-                                class="mni-action-checkbox"
+                                class="mni-checkbox"
                                 name="settings[actions][]"
                                 value="<?php echo esc_attr( $act_id ); ?>"
                                 <?php checked( in_array( $act_id, (array) get_option( 'mni_free_enabled_actions', array() ), true ) ); ?>>

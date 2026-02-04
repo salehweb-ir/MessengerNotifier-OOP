@@ -23,25 +23,17 @@ $available_actions = $wizard->get_actions();
         <?php wp_nonce_field( 'mni_free_wizard_save' ); ?>
 
         <!-- STEP 1 -->
-        <div class="mni-step wizard-step" data-require="checkbox" data-step="1">
+        <div class="mni-step" data-step="1">
             <h2><?php esc_html_e( 'General — Select Messengers', 'messengernotifier' ); ?></h2>
             <p><?php esc_html_e( 'Choose which messengers to activate. At least one must remain active.', 'messengernotifier' ); ?></p>
 
             <div class="mni-checkbox-list">
-
-                <!-- check all checkbox  -->
-                <label class="mni-check-all">
-                    <input type="checkbox" id="mni-select-all">
-                    <?php esc_html_e( 'Select all messengers', 'messengernotifier' ); ?>
-                </label>
-
                 <?php foreach ( $available as $id => $info ) : ?>
                     <label>
-                        <input  type="checkbox"
-                                class="mni-checkbox"
-                                name="settings[messengers][]"
-                                value="<?php echo esc_attr( $id ); ?>"
-                                <?php checked( in_array( $id, (array) get_option( 'mni_free_messengers', array( 'eitaa' ) ), true ) ); ?>>
+                        <input type="checkbox"
+                               class="mni-messenger-check"
+                               value="<?php echo esc_attr( $id ); ?>"
+                               <?php checked( in_array( $id, (array) get_option( 'mni_free_messengers', array( 'eitaa' ) ), true ) ); ?>>
                         <?php echo esc_html( $info['label'] );?>
                     </label>
                 <?php endforeach; ?>
@@ -53,25 +45,15 @@ $available_actions = $wizard->get_actions();
         </div>
 
         <!-- STEP 2 -->
-        <div class="mni-step wizard-step" data-step="2" data-require="checkbox" style="display:none;">
+        <div class="mni-step" data-step="2" style="display:none;">
             <h2><?php esc_html_e( 'Actions', 'messengernotifier' ); ?></h2>
             <p><?php esc_html_e( 'Choose which WordPress events should send notifications.', 'messengernotifier' ); ?></p>
 
             <div class="mni-checkbox-list">
-
-                <!-- check all checkbox -->
-                <label class="mni-check-all">
-                    <input type="checkbox" id="mni-select-all">
-                    <?php esc_html_e( 'Select all actions', 'messengernotifier' ); ?>
-                </label>
-
                 <?php foreach ( $available_actions as $act_id => $label ) : ?>
                     <label>
-                        <input  type="checkbox"
-                                class="mni-checkbox"
-                                name="settings[actions][]"
-                                value="<?php echo esc_attr( $act_id ); ?>"
-                                <?php checked( in_array( $act_id, (array) get_option( 'mni_free_enabled_actions', array() ), true ) ); ?>>
+                        <input type="checkbox" name="enabled_actions[]" value="<?php echo esc_attr( $act_id ); ?>"
+                            <?php checked( in_array( $act_id, (array) get_option( 'mni_free_enabled_actions', array() ), true ) ); ?>>
                         <?php echo esc_html( $label ); ?>
                     </label>
                 <?php endforeach; ?>
@@ -130,3 +112,7 @@ $available_actions = $wizard->get_actions();
 
     </form>
 </div>
+
+<!-- include CSS + JS -->
+<link rel="stylesheet" href="<?php echo esc_url( MNI_FREE_URL . 'assets/css/wizard.css' ); ?>">
+<script src="<?php echo esc_url( MNI_FREE_URL . 'assets/js/wizard.js' ); ?>"></script>

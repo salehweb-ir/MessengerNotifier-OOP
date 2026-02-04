@@ -20,8 +20,6 @@ class mni_free_admin {
         require_once MNI_FREE_PATH . 'includes/admin/wizard-service.php';
         require_once MNI_FREE_PATH . 'includes/admin/wizard-controller.php';
 
-        new MNI_Free_Wizard_Controller();
-
         add_action( 'admin_menu', [ $this, 'register_menu' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
     }

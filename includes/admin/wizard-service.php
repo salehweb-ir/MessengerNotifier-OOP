@@ -14,14 +14,6 @@ class MNI_Free_Wizard_Service {
                 'label' =>  __( 'eitaa', 'messengernotifier' ),
                 'name'  =>  'Eitaa',
             ],
-            'telegram' => [
-                'label' =>  __( 'telegram', 'messengernotifier' ),
-                'name'  =>  'Telegram',
-            ],
-            'bale' => [
-                'label' =>  __( 'bale', 'messengernotifier' ),
-                'name'  =>  'Bale',
-            ],
             // future messengers
         ];
     }

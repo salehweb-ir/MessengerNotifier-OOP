@@ -30,7 +30,7 @@ $all_actions = $wizard->get_actions();
                    class="mni-checkbox mni-messenger"
                    name="settings[messengers][]"
                    value="<?php echo esc_attr( $id ); ?>">
-            <?php echo esc_html( $info ); ?>
+            <?php error_log($info); echo esc_html( $info ); ?>
         </label>
     <?php endforeach; ?>
 

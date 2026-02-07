@@ -1,66 +1,81 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
 
-    const steps = document.querySelectorAll('.mni-step');
-    let currentStep = 0;
+    const steps = document.querySelectorAll('.wizard-step');
 
-    const showStep = index => {
-        steps.forEach((s, i) => {
-            s.classList.toggle('is-active', i === index);
-        });
-    };
+    function showStep(i) {
+        steps.forEach((s, index) => s.classList.toggle('active', index === i));
+    }
 
-    const validateStep = step => {
-        const checkboxes = step.querySelectorAll('input[type="checkbox"]:not(:disabled)');
-        return [...checkboxes].some(cb => cb.checked);
-    };
+    function hasChecked(step) {
+        return [...step.querySelectorAll('.mni-checkbox')]
+            .some(cb => cb.checked);
+    }
 
-    const updateNextButton = step => {
-        const btn = step.querySelector('.mni-next-step');
-        if (!btn) return;
-        btn.disabled = !validateStep(step);
-    };
+    function syncSelectAll(step) {
+        const selectAll = step.querySelector('.mni-select-all');
+        if (!selectAll) return;
 
-    // Step navigation
+        const boxes = step.querySelectorAll('.mni-checkbox');
+        selectAll.checked = boxes.length &&
+            [...boxes].every(cb => cb.checked);
+    }
+
+    document.addEventListener('change', e => {
+
+        if (e.target.classList.contains('mni-select-all')) {
+            const step = e.target.closest('.wizard-step');
+            step.querySelectorAll('.mni-checkbox')
+                .forEach(cb => cb.checked = e.target.checked);
+        }
+
+        if (e.target.classList.contains('mni-checkbox')) {
+            syncSelectAll(e.target.closest('.wizard-step'));
+        }
+    });
+
     document.addEventListener('click', e => {
 
-        if (e.target.classList.contains('mni-next-step')) {
-            currentStep++;
-            showStep(currentStep);
+        if (e.target.classList.contains('wizard-next')) {
+            const step = e.target.closest('.wizard-step');
+
+            if (step.dataset.require === 'checkbox' && !hasChecked(step)) {
+                alert('Select at least one option.');
+                return;
+            }
+
+            // Build messenger configs before step 3
+            if (step.dataset.step === "2") {
+                buildMessengerConfigs();
+            }
+
+            showStep([...steps].indexOf(step) + 1);
         }
 
-        if (e.target.classList.contains('mni-prev-step')) {
-            currentStep--;
-            showStep(currentStep);
+        if (e.target.classList.contains('wizard-prev')) {
+            const step = e.target.closest('.wizard-step');
+            showStep([...steps].indexOf(step) - 1);
         }
     });
 
-    // Checkbox validation
-    document.querySelectorAll('.mni-step').forEach(step => {
-        step.addEventListener('change', () => updateNextButton(step));
-    });
+    function buildMessengerConfigs() {
+        const container = document.getElementById('mni-messenger-configs');
+        container.innerHTML = '';
 
-    // Select all messengers
-    const selectAllMessengers = document.getElementById('mni-select-all-messengers');
-    if (selectAllMessengers) {
-        selectAllMessengers.addEventListener('change', () => {
-            document.querySelectorAll('.mni-messenger-checkbox').forEach(cb => {
-                cb.checked = selectAllMessengers.checked;
-            });
-            updateNextButton(steps[0]);
+        document.querySelectorAll('.mni-messenger:checked').forEach(cb => {
+            const id = cb.value;
+
+            container.insertAdjacentHTML('beforeend', `
+                <fieldset style="margin-bottom:20px">
+                    <legend><strong>${id.toUpperCase()} Settings</strong></legend>
+                    <label>Token<br>
+                        <input type="text" name="settings[config][${id}][token]" style="width:100%">
+                    </label><br><br>
+                    <label>Channel ID<br>
+                        <input type="text" name="settings[config][${id}][channel]" style="width:100%">
+                    </label>
+                </fieldset>
+            `);
         });
     }
 
-    // Select all actions
-    const selectAllActions = document.getElementById('mni-select-all-actions');
-    if (selectAllActions) {
-        selectAllActions.addEventListener('change', () => {
-            document.querySelectorAll('.mni-action-checkbox:not(:disabled)').forEach(cb => {
-                cb.checked = selectAllActions.checked;
-            });
-            updateNextButton(steps[1]);
-        });
-    }
-
-    // Initial state
-    showStep(0);
 });

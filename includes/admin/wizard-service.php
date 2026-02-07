@@ -10,17 +10,11 @@ class MNI_Free_Wizard_Service {
      */
     public function get_messengers() : array {
         return [
-            'eitaa' => [
-                'label' =>  __( 'eitaa', 'messengernotifier' ),
-                'name'  =>  'Eitaa',
-            ],
-            'bale' => [
-                'label' =>  __( 'bale', 'messengernotifier' ),
-                'name'  =>  'Bale',
-            ],
-
+            'eitaa'     =>  __( 'Eitaa', 'messengernotifier' ),
+            'bale'      =>  __( 'Bale', 'messengernotifier' ),
+            'telegram'  =>  __( 'Telegram', 'messengernotifier' ),
+            'whatsapp'  =>  __( 'WhatsApp', 'messengernotifier' ),];
             // future messengers
-        ];
     }
 
     /**

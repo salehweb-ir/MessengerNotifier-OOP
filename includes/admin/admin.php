@@ -66,6 +66,14 @@ class mni_free_admin {
             MNI_FREE_VERSION,
             true
         );
+        
+        wp_enqueue_script(
+            'mni-free-wizard',
+            MNI_FREE_URL . 'assets/js/wizard.js',
+            [ 'jquery' ],
+            MNI_FREE_VERSION,
+            true
+        );
     }
 
     /**

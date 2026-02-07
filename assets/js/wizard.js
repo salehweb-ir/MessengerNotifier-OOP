@@ -62,5 +62,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initial state
-    showStep(1);
+    showStep(0);
 });

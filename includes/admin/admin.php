@@ -53,6 +53,12 @@ class mni_free_admin {
             [],
             MNI_FREE_VERSION
         );
+        wp_enqueue_style(
+            'mni-free-wizard',
+            MNI_FREE_URL . 'assets/css/wizard.css',
+            [],
+            MNI_FREE_VERSION
+        );
 
         wp_localize_script( 'mni-wizard-js-handle', 'mniWizard', [
             'ajaxurl' => admin_url( 'admin-ajax.php' ),

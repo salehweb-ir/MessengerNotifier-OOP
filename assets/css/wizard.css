@@ -1,0 +1,8 @@
+.mni-step {
+    display: none;
+    min-height: 300px;
+}
+
+.mni-step.is-active {
+    display: block;
+}

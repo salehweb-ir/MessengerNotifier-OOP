@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Messenger Notifier OOP
+ * Plugin Name: Messenger Notifier OOP mobile
  * Description: Sends WordPress notifications to supported messengers like Eitaa.
  * Version: 2.0.0
  * Author: Salehweb

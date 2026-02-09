@@ -26,7 +26,9 @@ class MNI_Free_Wizard_Controller {
         check_admin_referer( 'mni_wizard_nonce' );
 
         // 3️⃣ Sanitize & prepare data
-        $settings = $this->sanitize_settings( $_POST['settings'] );
+        $settings = MNI_Free_Settings_Sanitizer::sanitize(
+            $_POST['settings'] ?? []
+        );
 
         // 4️⃣ Save settings
         update_option( 'mni_free_settings', $settings );
@@ -40,53 +42,4 @@ class MNI_Free_Wizard_Controller {
         );
         exit;
     }
-
-    /**
-     * Sanitize wizard settings
-     */
-    private function sanitize_settings( array $settings ) : array {
-
-    $clean = [];
-
-    // 1️⃣ messengers
-    $clean['messengers'] = [];
-    if ( isset( $settings['messengers'] ) && is_array( $settings['messengers'] ) ) {
-        foreach ( $settings['messengers'] as $messenger ) {
-            $clean['messengers'][] = sanitize_key( $messenger );
-        }
-        $clean['messengers'] = array_values( array_unique( $clean['messengers'] ) );
-    }
-
-    // 2️⃣ actions
-    $clean['actions'] = [];
-    if ( isset( $settings['actions'] ) && is_array( $settings['actions'] ) ) {
-        foreach ( $settings['actions'] as $action ) {
-            $clean['actions'][] = sanitize_key( $action );
-        }
-        $clean['actions'] = array_values( array_unique( $clean['actions'] ) );
-    }
-
-    // 3️⃣ config
-    $clean['config'] = [];
-    if ( isset( $settings['config'] ) && is_array( $settings['config'] ) ) {
-        foreach ( $settings['config'] as $messenger => $config ) {
-
-            $messenger = sanitize_key( $messenger );
-
-            if ( ! is_array( $config ) ) {
-                continue;
-            }
-
-            $clean['config'][ $messenger ] = [];
-
-            foreach ( $config as $key => $value ) {
-                $clean['config'][ $messenger ][ sanitize_key( $key ) ]
-                    = sanitize_text_field( $value );
-            }
-        }
-    }
-
-    return $clean;
-}
-
 }

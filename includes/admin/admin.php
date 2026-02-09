@@ -19,7 +19,9 @@ class mni_free_admin {
         
         require_once MNI_FREE_PATH . 'includes/admin/wizard-service.php';
         require_once MNI_FREE_PATH . 'includes/admin/wizard-controller.php';
-
+        require_once MNI_FREE_PATH . 'includes/admin/settings-controller.php';
+        require_once MNI_FREE_PATH . 'includes/traits/sanitizer.php';
+        
         add_action( 'admin_menu', [ $this, 'register_menu' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
     }
@@ -28,6 +30,8 @@ class mni_free_admin {
      * Register plugin menu & pages.
      */
     public function register_menu() {
+      
+      // Wizard menu
         add_menu_page(
             __( 'Messenger Notifier', 'messengernotifier' ),
             __( 'Messenger Notifier', 'messengernotifier' ),
@@ -36,6 +40,16 @@ class mni_free_admin {
             [ $this, 'render_wizard_page' ],
             'dashicons-megaphone',
             65
+        );
+        
+        // Settings (submenu)
+        add_submenu_page(
+            'mni_free_wizard',
+            __( 'Settings', 'messengernotifier' ),
+            __( 'Settings', 'messengernotifier' ),
+            'manage_options',
+            'mni_free_settings',
+            [ $this, 'render_settings_page' ]
         );
     }
 
@@ -94,4 +108,24 @@ class mni_free_admin {
             echo '<p>' . esc_html__( 'Wizard view file missing.', 'messengernotifier' ) . '</p></div>';
         }
     }
+    
+    
+    /**
+     * render settings page
+     */
+    public function render_settings_page() {
+
+    $settings_view = MNI_FREE_PATH . 'views/admin/settings.php';
+
+    if ( file_exists( $settings_view ) ) {
+        include $settings_view;
+    } else {
+        echo '<div class="wrap"><h2>' .
+            esc_html__( 'Settings', 'messengernotifier' ) .
+            '</h2><p>' .
+            esc_html__( 'Settings view file missing.', 'messengernotifier' ) .
+            '</p></div>';
+    }
+}
+
 }

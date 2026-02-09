@@ -5,14 +5,15 @@ $wizard = new MNI_Free_Wizard_Service();
 $all_messengers = $wizard->get_messengers();
 $saved_db_settings = $wizard->get_messenger_settings_from_db();
 $all_actions = $wizard->get_actions();
-
 ?>
 
 <div class="mni-wizard">
 
 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-<?php wp_nonce_field( 'mni_wizard_save', 'mni_wizard_nonce' ); ?>
-<input type="hidden" name="action" value="mni_save_wizard">
+<?php wp_nonce_field( 'mni_wizard_nonce' ); ?>
+<input type="hidden" id="mni_selected_messengers" name="mni_selected_messengers" value="">
+<input type="hidden" id="mni_selected_actions" name="mni_selected_actions" value="">
+<input type="hidden" name="action" value="mni_free_save_wizard">
 
 <!-- STEP 1 -->
 <div class="wizard-step active" data-step="1" data-require="checkbox">
@@ -30,7 +31,7 @@ $all_actions = $wizard->get_actions();
                    class="mni-checkbox mni-messenger"
                    name="settings[messengers][]"
                    value="<?php echo esc_attr( $id ); ?>">
-            <?php error_log($info); echo esc_html( $info ); ?>
+            <?php echo esc_html( $info ); ?>
         </label>
     <?php endforeach; ?>
 
@@ -54,8 +55,8 @@ $all_actions = $wizard->get_actions();
             <input type="checkbox"
                    class="mni-checkbox mni-action"
                    name="settings[actions][]"
-                   value="<?php echo esc_attr( $id ); ?>">
-            <?php echo esc_html( $label ); ?>
+                   value="<?php echo esc_attr( $act_id ); ?>">
+            <?php echo esc_html( $label );?>
         </label>
     <?php endforeach; ?>
 

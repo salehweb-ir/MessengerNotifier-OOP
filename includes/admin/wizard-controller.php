@@ -23,10 +23,10 @@ class MNI_Free_Wizard_Controller {
         }
 
         // 2️⃣ Nonce check
-        check_admin_referer( 'mni_free_wizard_save' );
+        check_admin_referer( 'mni_wizard_nonce' );
 
         // 3️⃣ Sanitize & prepare data
-        $settings = $this->sanitize_settings( $_POST );
+        $settings = $this->sanitize_settings( $_POST['settings'] );
 
         // 4️⃣ Save settings
         update_option( 'mni_free_settings', $settings );
@@ -44,35 +44,49 @@ class MNI_Free_Wizard_Controller {
     /**
      * Sanitize wizard settings
      */
-    private function sanitize_settings( array $data ) : array {
+    private function sanitize_settings( array $settings ) : array {
 
-        $clean = [];
+    $clean = [];
 
-        // 🧩 Features
-        $clean['features'] = [
-            'comment'        => ! empty( $data['feature_comment'] ),
-            'new_user'       => ! empty( $data['feature_new_user'] ),
-            'ordercompleted' => ! empty( $data['feature_ordercompleted'] ),
-        ];
-
-        // 🧩 Messengers (active)
-        $clean['messengers'] = isset( $data['messengers'] )
-            ? array_map( 'sanitize_key', (array) $data['messengers'] )
-            : [];
-
-        // 🧩 Messenger settings
-        if ( in_array( 'eitaa', $clean['messengers'], true ) ) {
-            $clean['eitaa'] = [
-                'token'   => sanitize_text_field( $data['eitaa_token'] ?? '' ),
-                'channel' => sanitize_text_field( $data['eitaa_channel'] ?? '' ),
-            ];
+    // 1️⃣ messengers
+    $clean['messengers'] = [];
+    if ( isset( $settings['messengers'] ) && is_array( $settings['messengers'] ) ) {
+        foreach ( $settings['messengers'] as $messenger ) {
+            $clean['messengers'][] = sanitize_key( $messenger );
         }
-
-        // 🧩 User phone field (for New User feature)
-        if ( isset( $data['user_phone_field'] ) ) {
-            $clean['user_phone_field'] = sanitize_key( $data['user_phone_field'] );
-        }
-
-        return $clean;
+        $clean['messengers'] = array_values( array_unique( $clean['messengers'] ) );
     }
+
+    // 2️⃣ actions
+    $clean['actions'] = [];
+    if ( isset( $settings['actions'] ) && is_array( $settings['actions'] ) ) {
+        foreach ( $settings['actions'] as $action ) {
+            $clean['actions'][] = sanitize_key( $action );
+        }
+        $clean['actions'] = array_values( array_unique( $clean['actions'] ) );
+    }
+
+    // 3️⃣ config
+    $clean['config'] = [];
+    if ( isset( $settings['config'] ) && is_array( $settings['config'] ) ) {
+        foreach ( $settings['config'] as $messenger => $config ) {
+
+            $messenger = sanitize_key( $messenger );
+
+            if ( ! is_array( $config ) ) {
+                continue;
+            }
+
+            $clean['config'][ $messenger ] = [];
+
+            foreach ( $config as $key => $value ) {
+                $clean['config'][ $messenger ][ sanitize_key( $key ) ]
+                    = sanitize_text_field( $value );
+            }
+        }
+    }
+
+    return $clean;
+}
+
 }

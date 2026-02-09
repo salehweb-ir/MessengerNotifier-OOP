@@ -19,7 +19,7 @@ class mni_free_feature_ordercompleted {
 public function maybe_hook(): void {
 
     if ( ! class_exists( 'WooCommerce' ) ) {
-        error_log('[MNI] WooCommerce not active');
+        // error_log('[MNI] WooCommerce not active');
         return;
     }
 

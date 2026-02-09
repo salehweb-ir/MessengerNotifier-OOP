@@ -56,6 +56,27 @@ document.addEventListener('DOMContentLoaded', function () {
             showStep([...steps].indexOf(step) - 1);
         }
     });
+    
+    /* =========================
+ * PREPARE DATA BEFORE SUBMIT
+ * ========================= */
+document.getElementById('mni-wizard-form').addEventListener('submit', function () {
+
+    // Messengers
+    const messengers = [...document.querySelectorAll('.mni-messenger-check:checked')]
+        .map(cb => cb.value);
+
+    document.getElementById('mni_messengers').value =
+        JSON.stringify(messengers);
+
+    // Actions
+    const actions = [...document.querySelectorAll('[name="enabled_actions[]"]:checked')]
+        .map(cb => cb.value);
+
+    document.getElementById('mni_actions').value =
+        JSON.stringify(actions);
+});
+
 
     function buildMessengerConfigs() {
         const container = document.getElementById('mni-messenger-configs');

@@ -14,6 +14,7 @@ define( 'MNI_FREE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MNI_FREE_URL', plugin_dir_url( __FILE__ ) );
 
 // ==== Include core files ====
+
 require_once MNI_FREE_PATH . 'includes/core/init.php';
 require_once MNI_FREE_PATH . 'includes/core/activator.php';
 require_once MNI_FREE_PATH . 'includes/core/deactivator.php';

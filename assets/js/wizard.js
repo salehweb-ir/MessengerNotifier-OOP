@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Build messenger configs before step 3
+            // Build messenger configs before step 4
             if (step.dataset.step === "2") {
                 buildMessengerConfigs();
             }

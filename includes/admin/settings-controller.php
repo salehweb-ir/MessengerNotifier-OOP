@@ -1,5 +1,9 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+require_once MNI_FREE_PATH . 'includes/traits/sanitizer.php';
 
 class MNI_Free_Settings_Controller {
 
@@ -11,25 +15,25 @@ class MNI_Free_Settings_Controller {
     }
 
     public function handle_save() {
-
+      
+        // Permission
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( 'Access denied' );
         }
 
-        check_admin_referer( 'mni_free_save_settings' );
+        // Nonce
+        check_admin_referer( 'mni_free_settings_save' );
 
-        $raw = $_POST['settings'] ?? [];
-       $clean = MNI_Free_Settings_Sanitizer::sanitize(
-            $_POST['settings'] ?? []
-        );
+        // Sanitize
+        $settings = ( new MNI_Free_Sanitizer() )->sanitize_settings( $_POST['settings'] ?? [] );
 
+        // Save
+        update_option( 'mni_free_settings', $settings );
 
-        update_option( 'mni_free_settings', $clean );
-
+        // Redirect back
         wp_redirect(
             admin_url( 'admin.php?page=mni_free_settings&saved=1' )
         );
         exit;
     }
 }
-new MNI_Free_Settings_Controller();

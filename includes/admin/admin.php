@@ -19,7 +19,10 @@ class mni_free_admin {
         
         require_once MNI_FREE_PATH . 'includes/admin/wizard-service.php';
         require_once MNI_FREE_PATH . 'includes/admin/wizard-controller.php';
+        
+        require_once MNI_FREE_PATH . 'includes/admin/settings-service.php';
         require_once MNI_FREE_PATH . 'includes/admin/settings-controller.php';
+        
         require_once MNI_FREE_PATH . 'includes/traits/sanitizer.php';
         
         add_action( 'admin_menu', [ $this, 'register_menu' ] );
@@ -31,20 +34,30 @@ class mni_free_admin {
      */
     public function register_menu() {
       
-      // Wizard menu
+      // Main menu
         add_menu_page(
             __( 'Messenger Notifier', 'messengernotifier' ),
             __( 'Messenger Notifier', 'messengernotifier' ),
             'manage_options',
-            'mni_free_wizard',
-            [ $this, 'render_wizard_page' ],
+            'mni_free',
+            [ $this, 'render_settings_page' ],
             'dashicons-megaphone',
             65
         );
         
+        // Wizard (submenu)
+        add_submenu_page(
+            'mni_free',
+            __( 'Messenger notifier wizard', 'messengernotifier' ),
+            __( 'wizard', 'messengernotifier' ),
+            'manage_options',
+            'mni_free_wizard',
+            [ $this, 'render_wizard_page' ]
+        );
+        
         // Settings (submenu)
         add_submenu_page(
-            'mni_free_wizard',
+            'mni_free',
             __( 'Settings', 'messengernotifier' ),
             __( 'Settings', 'messengernotifier' ),
             'manage_options',
@@ -94,6 +107,14 @@ class mni_free_admin {
             MNI_FREE_VERSION,
             true
         );
+        
+        wp_enqueue_script(
+          'mni-free-settings',
+          MNI_FREE_URL . 'assets/js/settings.js',
+          [ 'jquery' ],
+          MNI_FREE_VERSION,
+          true
+        );
     }
 
     /**
@@ -115,17 +136,16 @@ class mni_free_admin {
      */
     public function render_settings_page() {
 
-    $settings_view = MNI_FREE_PATH . 'views/admin/settings.php';
-
-    if ( file_exists( $settings_view ) ) {
-        include $settings_view;
-    } else {
-        echo '<div class="wrap"><h2>' .
-            esc_html__( 'Settings', 'messengernotifier' ) .
-            '</h2><p>' .
-            esc_html__( 'Settings view file missing.', 'messengernotifier' ) .
-            '</p></div>';
-    }
-}
-
+      $settings_view = MNI_FREE_PATH . 'views/admin/settings.php';
+  
+      if ( file_exists( $settings_view ) ) {
+          include $settings_view;
+      } else {
+          echo '<div class="wrap"><h2>' .
+              esc_html__( 'Settings', 'messengernotifier' ) .
+              '</h2><p>' .
+              esc_html__( 'Settings view file missing.', 'messengernotifier' ) .
+              '</p></div>';
+      }
+  }
 }

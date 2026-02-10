@@ -19,23 +19,29 @@ class mni_free_init {
             require_once MNI_FREE_PATH . 'includes/admin/admin.php';
             mni_free_admin::instance();
 
-            // // Wizard (THIS IS THE IMPORTANT PART)
+            // Wizard (THIS IS THE IMPORTANT PART)
             require_once MNI_FREE_PATH . 'includes/admin/wizard-controller.php';
             new MNI_Free_Wizard_Controller();
+            
+            // Settings (THIS IS THE IMPORTANT PART)
+            require_once MNI_FREE_PATH . 'includes/admin/settings-controller.php';
+            new MNI_Free_Settings_Controller();
 
             // Settings page (if exists)
             if ( file_exists( MNI_FREE_PATH . 'includes/admin/settings.php' ) ) {
                 require_once MNI_FREE_PATH . 'includes/admin/settings.php';
             }
             
-            // Settings page (if exists)
+             require_once MNI_FREE_PATH . 'includes/core/registry.php';
+             new MNI_Free_Registry();
+            
+            // messengers manager page (if exists)
             if ( file_exists( MNI_FREE_PATH . 'includes/messengers/manager.php' ) ) {
                 require_once MNI_FREE_PATH . 'includes/messengers/manager.php';
             }
 
         } else {
             require_once MNI_FREE_PATH . 'includes/frontend/contact.php';
-            mni_free_contact::instance();
         }
 
         // Load feature hooks

@@ -1,38 +1,17 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
-}
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+require_once MNI_FREE_PATH . 'includes/core/registry.php';
 
 class MNI_Free_Wizard_Service {
 
-    /**
-     * Available messengers
-     */
     public function get_messengers() : array {
-        return [
-            'eitaa'     =>  __( 'Eitaa', 'messengernotifier' ),
-            'bale'      =>  __( 'Bale', 'messengernotifier' ),
-            'telegram'  =>  __( 'Telegram', 'messengernotifier' ),
-            'whatsapp'  =>  __( 'WhatsApp', 'messengernotifier' ),];
-            // future messengers
+        $all = MNI_Free_Registry::messengers();
+        return $all;
     }
 
-    /**
-     * Get saved settings from DB
-     */
-    public function get_messenger_settings_from_db() : array {
-        return get_option( 'mni_free_settings', [] );
-    }
-
-    /**
-     * Available actions / features
-     */
     public function get_actions() : array {
-        return [
-            'comment'        => __( 'New Comment', 'messengernotifier' ),
-            'new_user'       => __( 'New User Registration', 'messengernotifier' ),
-            'ordercompleted' => __( 'WooCommerce Order Completed', 'messengernotifier' ),
-        ];
+        $all = MNI_Free_Registry::actions();
+        return $all;
     }
 }
-?>

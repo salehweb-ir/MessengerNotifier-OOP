@@ -1,45 +1,32 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
-}
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+require_once MNI_FREE_PATH . 'includes/traits/sanitizer.php';
 
 class MNI_Free_Wizard_Controller {
 
     public function __construct() {
-        add_action(
-            'admin_post_mni_free_save_wizard',
-            [ $this, 'handle_save' ]
-        );
+        add_action( 'admin_post_mni_free_save_wizard', [ $this, 'save' ] );
     }
 
-    /**
-     * Handle wizard form submission
-     */
-    public function handle_save() {
-
-        // 1️⃣ Capability check
+    public function save() {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( 'Access denied' );
         }
 
-        // 2️⃣ Nonce check
-        check_admin_referer( 'mni_wizard_nonce' );
+        check_admin_referer( 'mni_free_wizard_save' );
 
-        // 3️⃣ Sanitize & prepare data
-        $settings = MNI_Free_Settings_Sanitizer::sanitize(
-            $_POST['settings'] ?? []
-        );
+        $settings = ( new MNI_Free_Sanitizer() )->sanitize_settings( $_POST['settings'] ?? [] );
+        
+        error_log("POST settings: \n" . print_r($_POST['settings'], true) . "\n");
+        
+        
+        error_log("settings: " . print_r($settings, true) . "\n");
 
-        // 4️⃣ Save settings
         update_option( 'mni_free_settings', $settings );
-
-        // 5️⃣ Mark wizard as completed
         update_option( 'mni_free_wizard_completed', 1 );
 
-        // 6️⃣ Redirect back to wizard page
-        wp_redirect(
-            admin_url( 'admin.php?page=mni_free_wizard&saved=1' )
-        );
+        wp_redirect( admin_url( 'admin.php?page=mni_free_settings&saved=1' ) );
         exit;
     }
 }

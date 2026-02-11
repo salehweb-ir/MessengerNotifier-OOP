@@ -11,11 +11,18 @@ class MNI_Free_Settings_Service {
         $this->settings = (array) get_option( 'mni_free_settings', [] );
     }
 
+    /* -------------------------------------------------
+     * Raw Settings
+     * ------------------------------------------------- */
     public function get_settings(): array {
         return $this->settings;
     }
 
+    /* -------------------------------------------------
+     * Messengers
+     * ------------------------------------------------- */
     public function get_messengers(): array {
+
         $all     = MNI_Free_Registry::messengers();
         $active  = $this->settings['messengers'] ?? [];
 
@@ -28,7 +35,11 @@ class MNI_Free_Settings_Service {
         return $all;
     }
 
+    /* -------------------------------------------------
+     * Actions
+     * ------------------------------------------------- */
     public function get_actions(): array {
+
         $all     = MNI_Free_Registry::actions();
         $active  = $this->settings['actions'] ?? [];
 
@@ -41,15 +52,49 @@ class MNI_Free_Settings_Service {
         return $all;
     }
 
+    /* -------------------------------------------------
+     * Contact Page
+     * ------------------------------------------------- */
     public function get_contact_page(): array {
-        return $this->settings['contact_page'] ?? [
-            'title'    => '',
-            'slug'     => '',
-            'template' => 'default',
+
+        $page_id = $this->settings['contact_page']['id'] ?? 0;
+
+        if ( ! $page_id ) {
+            return [
+                'id'       => 0,
+                'title'    => '',
+                'slug'     => '',
+                'status'   => '',
+                'template' => '',
+            ];
+        }
+
+        $post = get_post( $page_id );
+
+        if ( ! $post || $post->post_type !== 'page' ) {
+            return [
+                'id'       => 0,
+                'title'    => '',
+                'slug'     => '',
+                'status'   => '',
+                'template' => '',
+            ];
+        }
+
+        return [
+            'id'       => $page_id,
+            'title'    => $post->post_title,
+            'slug'     => $post->post_name,
+            'status'   => $post->post_status,
+            'template' => get_page_template_slug( $page_id ),
         ];
     }
 
+    /* -------------------------------------------------
+     * Messenger Config
+     * ------------------------------------------------- */
     public function get_config( string $messenger ): array {
+
         return $this->settings['config'][ $messenger ] ?? [];
     }
 }

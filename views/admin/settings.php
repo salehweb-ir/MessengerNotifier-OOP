@@ -2,149 +2,184 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $service     = new MNI_Free_Settings_Service();
-$messengers  =  $service->get_messengers();
-$actions     =  $service->get_actions();
-$contact     =  $service->get_contact_page();
-$templates   =  MNI_Free_Registry::page_templates();
+$messengers  = $service->get_messengers();
+$actions     = $service->get_actions();
+$contact     = $service->get_contact_page();
+$templates   = MNI_Free_Registry::page_templates();
 new MNI_Free_Settings_Controller();
+
+$page_id     = $contact['id'] ?? 0;
+$page_obj    = $page_id ? get_post( $page_id ) : null;
+$current_tpl = $page_id ? get_page_template_slug( $page_id ) : '';
 ?>
 
 <div class="wrap">
-    <h1><?php esc_html_e( 'Messenger Notifier — Settings', 'messengernotifier' ); ?></h1>
+    <h1>Messenger Notifier — Settings</h1>
 
     <?php if ( isset( $_GET['saved'] ) ) : ?>
         <div class="notice notice-success is-dismissible">
-            <p><?php esc_html_e( 'Settings saved successfully.', 'messengernotifier' ); ?></p>
+            <p>Settings saved successfully.</p>
         </div>
     <?php endif; ?>
-
-    <h2 class="nav-tab-wrapper">
-        <a href="#contact" class="nav-tab nav-tab-active"><?php esc_html_e( 'Anonymous Page', 'messengernotifier' ); ?></a>
-        <a href="#messengers" class="nav-tab"><?php esc_html_e( 'Messengers', 'messengernotifier' ); ?></a>
-        <a href="#actions" class="nav-tab"><?php esc_html_e( 'Actions', 'messengernotifier' ); ?></a>
-        <a href="#config" class="nav-tab"><?php esc_html_e( 'Configuration', 'messengernotifier' ); ?></a>
-    </h2>
 
     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
         <input type="hidden" name="action" value="mni_free_save_settings">
         <?php wp_nonce_field( 'mni_free_settings_save' ); ?>
 
-        <!-- ================= Contact Page ================= -->
-        <div id="contact" class="mni-settings-section">
+        <!-- ================= Contact Page Card ================= -->
+        <div class="postbox" style="margin-top:20px;">
+            <div class="postbox-header">
+                <h2 class="hndle">Anonymous Contact Page</h2>
+            </div>
 
-            <h2><?php esc_html_e( 'Anonymous Contact Page', 'messengernotifier' ); ?></h2>
+            <div class="inside">
 
-            <table class="form-table">
-                <tr>
-                    <th scope="row"><?php esc_html_e( 'Page Title', 'messengernotifier' ); ?></th>
-                    <td>
-                        <input type="text"
-                               name="settings[contact_page][title]"
-                               value="<?php echo esc_attr( $contact['title'] ); ?>"
-                               class="regular-text">
-                    </td>
-                </tr>
+                <?php if ( $page_obj ) : ?>
 
-                <tr>
-                    <th scope="row"><?php esc_html_e( 'Page Slug', 'messengernotifier' ); ?></th>
-                    <td>
-                        <input type="text"
-                               name="settings[contact_page][slug]"
-                               value="<?php echo esc_attr( $contact['slug'] ); ?>"
-                               class="regular-text">
-                    </td>
-                </tr>
+                    <p>
+                        <strong>Title:</strong>
+                        <?php echo esc_html( $page_obj->post_title ); ?>
+                    </p>
 
-                <tr>
-                    <th scope="row"><?php esc_html_e( 'Page Template', 'messengernotifier' ); ?></th>
-                    <td>
-                        <select name="settings[contact_page][template]">
-                            <?php foreach ( $templates as $id => $label ) : ?>
-                                <option value="<?php echo esc_attr( $id ); ?>"
-                                    <?php selected( $contact['template'], $id ); ?>>
-                                    <?php echo esc_html( $label ); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </td>
-                </tr>
-            </table>
+                    <p>
+                        <strong>Slug:</strong>
+                        <?php echo esc_html( $page_obj->post_name ); ?>
+                    </p>
 
+                    <p>
+                        <strong>Status:</strong>
+                        <?php echo esc_html( ucfirst( $page_obj->post_status ) ); ?>
+                    </p>
+
+                    <p>
+                        <a class="button button-secondary"
+                           href="<?php echo esc_url( get_edit_post_link( $page_id ) ); ?>">
+                            Edit Page
+                        </a>
+
+                        <a class="button"
+                           target="_blank"
+                           href="<?php echo esc_url( get_permalink( $page_id ) ); ?>">
+                            View Page
+                        </a>
+                    </p>
+
+                <?php else : ?>
+
+                    <p style="color:#b32d2e;">
+                        Contact page not found. Please run the wizard again.
+                    </p>
+
+                <?php endif; ?>
+
+                <hr>
+
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">Page Template</th>
+                        <td>
+                            <select name="settings[contact_page][template]">
+                                <option value="">Default Theme Template</option>
+
+                                <?php foreach ( $templates as $id => $label ) : ?>
+                                    <option value="<?php echo esc_attr( $id ); ?>"
+                                        <?php selected( $current_tpl, $id ); ?>>
+                                        <?php echo esc_html( $label ); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+
+                <input type="hidden"
+                       name="settings[contact_page][id]"
+                       value="<?php echo esc_attr( $page_id ); ?>">
+
+            </div>
         </div>
 
         <!-- ================= Messengers ================= -->
-        <div id="messengers" class="mni-settings-section" style="margin-top:40px;">
+        <div class="postbox" style="margin-top:20px;">
+            <div class="postbox-header">
+                <h2 class="hndle">Messengers</h2>
+            </div>
+            <div class="inside">
 
-            <h2><?php esc_html_e( 'Messengers', 'messengernotifier' ); ?></h2>
+                <?php foreach ( $messengers as $id => $m ) : ?>
+                    <label style="display:block;margin-bottom:8px;">
+                        <input type="checkbox"
+                               name="settings[messengers][]"
+                               value="<?php echo esc_attr( $id ); ?>"
+                               <?php checked( $m['active'] ?? false ); ?>>
+                        <strong><?php echo esc_html( $m['label'] ); ?></strong>
+                    </label>
+                <?php endforeach; ?>
 
-            <?php foreach ( $messengers as $id => $m ) : ?>
-                <label style="display:block;margin-bottom:6px;">
-                  <input type="checkbox"
-                     class="mni-messenger-toggle"
-                     data-messenger="<?php echo esc_attr( $id ); ?>"
-                     name="settings[messengers][]"
-                     value="<?php echo esc_attr( $id ); ?>"
-                     <?php checked( $m['active'] ?? false ); ?>>
-                     <strong><?php echo esc_html( $m['label'] ); ?></strong>
-                </label>
-            <?php endforeach; ?>
-
+            </div>
         </div>
 
         <!-- ================= Actions ================= -->
-        <div id="actions" class="mni-settings-section" style="margin-top:40px;">
+        <div class="postbox" style="margin-top:20px;">
+            <div class="postbox-header">
+                <h2 class="hndle">Actions</h2>
+            </div>
+            <div class="inside">
 
-            <h2><?php esc_html_e( 'Actions', 'messengernotifier' ); ?></h2>
+                <?php foreach ( $actions as $id => $a ) : ?>
+                    <label style="display:block;margin-bottom:8px;">
+                        <input type="checkbox"
+                               name="settings[actions][]"
+                               value="<?php echo esc_attr( $id ); ?>"
+                               <?php checked( $a['active'] ?? false ); ?>>
+                        <?php echo esc_html( $a['label'] ); ?>
+                    </label>
+                <?php endforeach; ?>
 
-            <?php foreach ( $actions as $id => $a ) : ?>
-                <label style="display:block;margin-bottom:6px;">
-                    <input type="checkbox"
-                           name="settings[actions][]"
-                           value="<?php echo esc_attr( $id ); ?>"
-                           <?php checked( $a['active'] ?? false ); ?>>
-                    <?php echo esc_html( $a['label'] ); ?>
-                </label>
-            <?php endforeach; ?>
-
+            </div>
         </div>
 
-        <!-- ================= Configuration ================= -->
-        <div id="config" class="mni-settings-section" style="margin-top:40px;">
+        <!-- ================= Config ================= -->
+        <div class="postbox" style="margin-top:20px;">
+            <div class="postbox-header">
+                <h2 class="hndle">Messenger Configuration</h2>
+            </div>
+            <div class="inside">
 
-            <h2><?php esc_html_e( 'Messenger Configuration', 'messengernotifier' ); ?></h2>
-
-            <?php foreach ( $messengers as $id => $m ) :
-                $cfg = $service->get_config( $id );
-            ?>
-                <fieldset class="mni-messenger-config"
-                  data-messenger="<?php echo esc_attr( $id ); ?>"
-                  style="border:1px solid #ccd0d4;padding:15px;margin-bottom:20px;">
-                    <legend><strong><?php echo esc_html( $m['label'] ); ?></strong></legend>
+                <?php foreach ( $messengers as $id => $m ) :
+                    $cfg = $service->get_config( $id );
+                ?>
+                    <h4><?php echo esc_html( $m['label'] ); ?></h4>
 
                     <table class="form-table">
                         <tr>
-                            <th><?php esc_html_e( 'API Token', 'messengernotifier' ); ?></th>
+                            <th>API Token</th>
                             <td>
                                 <input type="text"
+                                       class="regular-text"
                                        name="settings[config][<?php echo esc_attr( $id ); ?>][token]"
-                                       value="<?php echo esc_attr( $cfg['token'] ?? '' ); ?>"
-                                       class="regular-text">
+                                       value="<?php echo esc_attr( $cfg['token'] ?? '' ); ?>">
                             </td>
                         </tr>
                         <tr>
-                            <th><?php esc_html_e( 'Channel ID', 'messengernotifier' ); ?></th>
+                            <th>Channel ID</th>
                             <td>
                                 <input type="text"
+                                       class="regular-text"
                                        name="settings[config][<?php echo esc_attr( $id ); ?>][channel]"
-                                       value="<?php echo esc_attr( $cfg['channel'] ?? '' ); ?>"
-                                       class="regular-text">
+                                       value="<?php echo esc_attr( $cfg['channel'] ?? '' ); ?>">
                             </td>
                         </tr>
                     </table>
-                </fieldset>
-            <?php endforeach; ?>
 
+                    <hr>
+
+                <?php endforeach; ?>
+
+            </div>
         </div>
+
         <?php submit_button(); ?>
+
     </form>
 </div>

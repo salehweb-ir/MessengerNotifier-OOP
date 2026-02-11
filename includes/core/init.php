@@ -41,7 +41,10 @@ class mni_free_init {
             }
 
         } else {
-            require_once MNI_FREE_PATH . 'includes/frontend/contact.php';
+                  require_once MNI_FREE_PATH . 'includes/frontend/template_loader.php';
+                  require_once MNI_FREE_PATH . 'includes/frontend/shortcode_contact.php';
+                  
+                  new MNI_Free_Shortcode_Contact();
         }
 
         // Load feature hooks

@@ -50,7 +50,7 @@ $all_actions = $wizard->get_actions();
     <hr>
 
     <?php foreach ( $all_actions as $act_id => $action ) : ?>
-          <?php $available = mni_is_requirement_met( $action['requires'] ); ?>
+          <?php $available = 1; // mni_is_requirement_met( $action['requires'] ); ?>
       
           <label style="display:block; opacity: <?php echo $available ? '1' : '0.5'; ?>">
               <input type="checkbox"

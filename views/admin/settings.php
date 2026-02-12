@@ -79,7 +79,6 @@ $current_tpl = $page_id ? get_page_template_slug( $page_id ) : '';
                         <th scope="row">Page Template</th>
                         <td>
                             <select name="settings[contact_page][template]">
-                                <option value="">Default Theme Template</option>
 
                                 <?php foreach ( $templates as $id => $label ) : ?>
                                     <option value="<?php echo esc_attr( $id ); ?>"

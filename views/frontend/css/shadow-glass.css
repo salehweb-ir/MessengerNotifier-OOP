@@ -1,0 +1,14 @@
+.mni-template-shadow-glass {
+    background: linear-gradient(120deg, #89f7fe, #66a6ff);
+    padding: 70px 20px;
+}
+
+.mni-template-shadow-glass .mni-free-form {
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 40px;
+    border-radius: 22px;
+    box-shadow:
+        0 25px 50px rgba(0,0,0,0.25);
+}

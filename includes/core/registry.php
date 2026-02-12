@@ -34,22 +34,39 @@ class MNI_Free_Registry {
     }
 
     /* ---------- Page Templates (Frontend) ---------- */
-      public static function page_templates() : array {
-          $templates = [];
-          
-          $dir = MNI_FREE_PATH . '/views/frontend/';
+      public static function page_templates(): array {
+        $path = MNI_FREE_PATH . 'views/frontend/css/';
+        $files = glob( $path . '*.css' );
       
-          if ( is_dir( $dir ) ) {
-              $files = glob( $dir . '*.php' );
+        $templates = [];
       
-              foreach ( $files as $file ) {
-                  $filename = basename( $file, '.php' );
-                  $templates[ $filename ] = ucwords( str_replace( '_', ' ', $filename ) );
-              }
-          }
+        if ( ! $files ) {
+            return $templates;
+        }
       
-          return $templates;
+        foreach ( $files as $file ) {
+      
+            $slug = basename( $file, '.css' );
+            $templates[ $slug ] = ucwords( str_replace( '-', ' ', $slug ) );
+        }
+      
+        // مرتب‌سازی الفبایی
+        ksort( $templates );
+      
+        // اگر default وجود داشت، بیار اول
+        if ( isset( $templates['default'] ) ) {
+      
+            $default = [ 'default' => $templates['default'] ];
+            unset( $templates['default'] );
+      
+            $templates = $default + $templates;
+        }
+      
+        return $templates;
       }
+
+      
+      
 
     
     public static function all() : array {

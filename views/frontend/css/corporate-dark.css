@@ -1,0 +1,19 @@
+.mni-template-corporate-dark {
+    background: #111;
+    color: #fff;
+    border-radius: 8px;
+    padding: 30px;
+}
+
+.mni-template-corporate-dark textarea {
+    background: #ccc;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 5px;
+}
+
+.mni-template-corporate-dark button {
+    background: #0d6efd;
+    color: #fff;
+    border: none;
+}

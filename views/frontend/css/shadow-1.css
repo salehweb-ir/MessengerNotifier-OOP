@@ -1,0 +1,21 @@
+.mni-template-shadow-1 {
+    background: #f1f5f9;
+    padding: 60px 20px;
+}
+
+.mni-template-shadow-1 .mni-free-form {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.08),
+        0 4px 10px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mni-template-shadow-1 .mni-free-form:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.12),
+        0 8px 20px rgba(0,0,0,0.08);
+}

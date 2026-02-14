@@ -35,6 +35,8 @@ class mni_free_messenger_manager {
         foreach ( $active as $messenger_id ) {
 
             if ( isset( $class_map[ $messenger_id ] ) ) {
+
+            
                 $class = $class_map[ $messenger_id ];
                 $this->messengers[ $messenger_id ] = $class::instance();
             }

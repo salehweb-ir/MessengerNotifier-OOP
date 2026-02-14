@@ -33,9 +33,9 @@ class Eitaa implements MessengerInterface {
             $settings = get_option( 'mni_free_settings', [] );
 
             return (
-                isset( $settings['eitaa']['token'], $settings['eitaa']['channel'] )
-                && $settings['eitaa']['token'] !== ''
-                && $settings['eitaa']['channel'] !== ''
+                isset( $settings['config']['eitaa']['token'], $settings['config']['eitaa']['channel'] )
+                && $settings['config']['eitaa']['token'] !== ''
+                && $settings['config']['eitaa']['channel'] !== ''
             );
         }
 
@@ -53,10 +53,12 @@ class Eitaa implements MessengerInterface {
 
         $settings = get_option( 'mni_free_settings', [] );
 
-        $token      = $settings['eitaa']['token'];
-        $channel_id = $settings['eitaa']['channel'];
+        $token      = $settings['config']['eitaa']['token'];
+        $channel_id = $settings['config']['eitaa']['channel'];
 
         $url = "https://eitaayar.ir/api/{$token}/sendMessage";
+
+        error_log($url);
 
         $body = [
             'chat_id'    => $channel_id,

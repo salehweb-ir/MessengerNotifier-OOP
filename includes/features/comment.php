@@ -7,13 +7,21 @@ require_once MNI_FREE_PATH . 'includes/messengers/manager.php';
 class mni_free_feature_comment {
     use mni_singleton;
 
+    /**
+     * Whether comment action is enabled.
+     *
+     * @var bool
+     */
     private $enabled = false;
 
     private function __construct() {
 
-        $features = get_option( 'mni_free_features', [] );
+        $settings = get_option( 'mni_free_settings', [] );
 
-        $this->enabled = (empty( $features['comment'] ) ? false : true);
+        $this->enabled = ! empty( $settings['actions'] )
+            && in_array( 'comment', $settings['actions'], true );
+
+            error_log("comment action is in array: " . ( in_array( 'comment', $settings['actions'], true ) ? 'true' : 'false'));
 
         add_action( 'comment_post', [ $this, 'handle_new_comment' ], 10, 2 );
     }
@@ -107,10 +115,10 @@ class mni_free_feature_comment {
         }
 
         // 🔴 Feature disabled → log message only
-        if ( ! $this->enabled ) {
+       /*  if ( ! $this->enabled ) {
             error_log( '[MNI Comment Disabled] ' . $message );
             return false;
-        }
+        } */
 
         return $message;
     }

@@ -58,15 +58,11 @@ class Eitaa implements MessengerInterface {
 
         $url = "https://eitaayar.ir/api/{$token}/sendMessage";
 
-        error_log($url);
-
         $body = [
             'chat_id'    => $channel_id,
             'text'       => $message . ( $type ? "\n\n#" . $type : '' ),
             'parse_mode' => 'HTML',
         ];
-
-        error_log( $body['text'] );
 
         $response = wp_remote_post( $url, [
             'body'    => $body,

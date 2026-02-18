@@ -21,8 +21,6 @@ class mni_free_feature_comment {
         $this->enabled = ! empty( $settings['actions'] )
             && in_array( 'comment', $settings['actions'], true );
 
-            error_log("comment action is in array: " . ( in_array( 'comment', $settings['actions'], true ) ? 'true' : 'false'));
-
         add_action( 'comment_post', [ $this, 'handle_new_comment' ], 10, 2 );
     }
 
@@ -113,12 +111,6 @@ class mni_free_feature_comment {
                 admin_url( "comment.php?action=trash&c={$comment->comment_ID}" )
             ) . "\n\n";
         }
-
-        // 🔴 Feature disabled → log message only
-       /*  if ( ! $this->enabled ) {
-            error_log( '[MNI Comment Disabled] ' . $message );
-            return false;
-        } */
 
         return $message;
     }

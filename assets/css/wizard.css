@@ -3,6 +3,139 @@
     min-height: 300px;
 }
 
-.mni-step.is-active {
+.mni-step.active {
     display: block;
+}
+
+/* ===== Wizard Container ===== */
+.mni-wizard {
+    max-width: 760px;
+    background: #ffffff;
+    padding: 28px;
+    margin: 20px auto;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+/* ===== Step Titles ===== */
+.mni-wizard h2 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+/* ===== Steps ===== */
+.wizard-step {
+    display: none;
+    min-height: 320px;
+    animation: fadeIn .25s ease-in-out;
+}
+
+.wizard-step.active {
+    display: block;
+}
+
+/* ===== Fade Animation ===== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Labels ===== */
+.wizard-step label {
+    display: block;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+/* ===== Inputs ===== */
+.mni-input,
+.mni-select,
+.mni-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccd0d4;
+    border-radius: 8px;
+    margin: 6px 0 16px;
+    background: #fff;
+    transition: border .2s, box-shadow .2s;
+}
+
+.mni-input:focus,
+.mni-select:focus,
+.mni-textarea:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 2px rgba(34,113,177,0.15);
+    outline: none;
+}
+
+/* ===== Checkbox List ===== */
+.mni-checkbox {
+    margin-right: 8px;
+}
+
+/* ===== Select All ===== */
+.mni-select-all {
+    margin-right: 6px;
+}
+
+/* ===== Disabled items ===== */
+.wizard-step label[style*="opacity: 0.5"] {
+    cursor: not-allowed;
+}
+
+/* ===== Navigation Buttons ===== */
+.wizard-nav {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.wizard-nav button,
+.wizard-nav .button {
+    min-width: 120px;
+}
+
+/* ===== Primary Button Style ===== */
+.wizard-nav .button-primary,
+.wizard-nav input[type=submit] {
+    background: linear-gradient(135deg, #2271b1, #135e96);
+    border: none;
+    box-shadow: 0 4px 12px rgba(34,113,177,0.25);
+}
+
+.wizard-nav .button-primary:hover {
+    background: linear-gradient(135deg, #135e96, #0f4c7a);
+}
+
+/* ===== Step Divider ===== */
+.wizard-step hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 12px 0 18px;
+}
+
+/* ===== Messenger Config Box (Step 4) ===== */
+#mni-messenger-configs {
+    background: #f6f7f7;
+    border: 1px solid #e2e4e7;
+    padding: 16px;
+    border-radius: 10px;
+}
+
+/* ===== Small warning text ===== */
+.wizard-step small {
+    margin-left: 6px;
+    font-size: 12px;
+}
+
+
+
+
+.wizard-nav .wizard-prev {
+    margin-right: auto;
 }

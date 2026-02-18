@@ -9,9 +9,6 @@ class MNI_Free_Registry {
             'eitaa' => [
               'label' => __( 'Eitaa', 'messengernotifier' ),
             ],
-             'bale' => [
-              'label' => __( 'Bale', 'messengernotifier' ),
-            ],
           ];
     }
 

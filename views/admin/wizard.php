@@ -35,7 +35,7 @@ $all_actions = $wizard->get_actions();
     <?php endforeach; ?>
 
     <div class="wizard-nav">
-        <button type="button" class="wizard-next">Next</button>
+        <button type="button" class="wizard-next button button-primary">Next</button>
     </div>
 </div>
 
@@ -71,8 +71,8 @@ $all_actions = $wizard->get_actions();
 
 
     <div class="wizard-nav">
-        <button type="button" class="wizard-prev">Previous</button>
-        <button type="button" class="wizard-next">Next</button>
+        <button type="button" class="wizard-prev button button-secondary">Previous</button>
+        <button type="button" class="wizard-next button button-primary">Next</button>
     </div>
 </div>
 
@@ -109,8 +109,8 @@ $all_actions = $wizard->get_actions();
 
 
     <div class="wizard-nav">
-        <button type="button" class="wizard-prev">Previous</button>
-        <button type="button" class="wizard-next">Next</button>
+        <button type="button" class="wizard-prev button button-secondary">Previous</button>
+        <button type="button" class="wizard-next button button-primary">Next</button>
     </div>
 </div>
 
@@ -124,17 +124,10 @@ $all_actions = $wizard->get_actions();
     </div>
 
     <div class="wizard-nav">
-        <button type="button" class="wizard-prev">Previous</button>
-        <?php submit_button(); ?>
+        <button type="button" class="wizard-prev button button-secondary">Previous</button>
+        <button type="submit" name="submit" class="wizard-submit button button-primary"><?php esc_html_e('Test and Save', 'messengernotifier'); ?></button>
     </div>
 </div>
 
 </form>
 </div>
-
-<style>
-.mni-wizard { max-width:720px;background:#fff;padding:20px }
-.wizard-step { display:none; min-height:300px }
-.wizard-step.active { display:block }
-.wizard-nav { margin-top:30px; display:flex; justify-content:space-between }
-</style>

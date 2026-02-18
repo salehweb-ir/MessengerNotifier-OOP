@@ -22,13 +22,6 @@
     right: 18px;
 }
 
-/* Back button left aligned inside step */
-.mni-step .mni-prev-step {
-    /* position: absolute;
-    bottom: 18px;
-    left: 18px; */
-}
-
 /* Inputs */
 .mni-input, .mni-textarea {
     width: 100%;

@@ -7,7 +7,11 @@ class MNI_Free_Wizard_Controller {
 
     public function __construct() {
         add_action( 'admin_post_mni_free_save_wizard', [ $this, 'save' ] );
+        add_action( 'wp_ajax_mni_test_messenger', [ $this, 'ajax_test_messenger' ] );
     }
+
+
+
 
     public function save() {
 
@@ -86,5 +90,26 @@ class MNI_Free_Wizard_Controller {
         }
 
         return (int) $page_id;
+    }
+
+    public function ajax_test_messenger() {
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( 'Unauthorized' );
+        }
+
+        $messenger = sanitize_text_field( $_POST['messenger'] ?? '' );
+        $config    = $_POST['config'] ?? [];
+
+        $result = mni_free_messenger_manager::instance()
+            ->send_test( $messenger, $config );
+
+            error_log("messenger: " . $messenger . "\nconfig: " . print_r($config,true) . "\nresult: " . $result);
+
+        if ( ! empty( $result['success'] ) ) {
+            wp_send_json_success( $result );
+        }
+
+        wp_send_json_error( $result );
     }
 }

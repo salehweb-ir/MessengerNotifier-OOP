@@ -125,7 +125,8 @@ $all_actions = $wizard->get_actions();
 
     <div class="wizard-nav">
         <button type="button" class="wizard-prev button button-secondary">Previous</button>
-        <button type="submit" name="submit" class="wizard-submit button button-primary"><?php esc_html_e('Test and Save', 'messengernotifier'); ?></button>
+        <span><?php esc_html_e('test connection before saving','messengernotifier'); ?></span>
+        <button type="submit" name="submit" class="wizard-submit button button-primary"><?php esc_html_e('Save', 'messengernotifier'); ?></button>
     </div>
 </div>
 

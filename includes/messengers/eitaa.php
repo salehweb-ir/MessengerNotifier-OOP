@@ -11,6 +11,25 @@ class Eitaa implements MessengerInterface {
 
     use \mni_singleton;
 
+    private $token;
+    private $channel;
+
+    public function __construct( array $config = [] ) {
+
+        if ( ! empty( $config ) ) {
+            // 👈 برای تست اتصال
+            $this->token   = $config['token'] ?? '';
+            $this->channel = $config['channel'] ?? '';
+        } else {
+            // 👈 حالت عادی (از تنظیمات)
+            $settings = get_option( 'mni_free_settings', [] );
+
+            $this->token   = $settings['config']['eitaa']['token'] ?? '';
+            $this->channel = $settings['config']['eitaa']['channel'] ?? '';
+        }
+    }
+
+
     /**
      * Messenger unique ID
      */
@@ -44,17 +63,10 @@ class Eitaa implements MessengerInterface {
      */
     public function send( string $message, string $type = '' ): array {
 
-        if ( ! $this->is_configured() ) {
-            return [
-                'success' => false,
-                'error'   => 'Eitaa is not configured.',
-            ];
-        }
-
         $settings = get_option( 'mni_free_settings', [] );
 
-        $token      = $settings['config']['eitaa']['token'];
-        $channel_id = $settings['config']['eitaa']['channel'];
+        $token      = $this->token;
+        $channel_id = $this->channel;
 
         $url = "https://eitaayar.ir/api/{$token}/sendMessage";
 

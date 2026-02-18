@@ -20,6 +20,36 @@ class mni_free_messenger_manager {
         $this->load_messengers();
     }
 
+    public function send_test( string $messenger_id, array $config ) : array {
+
+        $class_map = [
+            'eitaa' => \MessengerNotifier\Messengers\Eitaa::class,
+            // future: 'telegram' => Telegram::class,
+        ];
+
+        if ( ! isset( $class_map[ $messenger_id ] ) ) {
+            return [
+                'success' => false,
+                'message' => 'Messenger not supported'
+            ];
+        }
+
+        $class = $class_map[ $messenger_id ];
+
+        if ( ! class_exists( $class ) ) {
+            return [
+                'success' => false,
+                'message' => 'Messenger class not found'
+            ];
+        }
+
+        /** @var MessengerInterface $instance */
+        $instance = new $class( $config ); // 👈 مهم: ارسال تنظیمات فرم
+
+        return $instance->send( '✅ Test message from Messenger Notifier','test' );
+    }
+
+
     private function load_messengers() : void {
 
         $active = get_option( 'mni_free_messengers', [] );

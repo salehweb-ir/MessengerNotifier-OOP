@@ -1,11 +1,3 @@
-.mni-step {
-    display: none;
-    min-height: 300px;
-}
-
-.mni-step.active {
-    display: block;
-}
 
 /* ===== Wizard Container ===== */
 .mni-wizard {
@@ -30,12 +22,13 @@
 /* ===== Steps ===== */
 .wizard-step {
     display: none;
-    min-height: 320px;
+    min-height: 400px;
     animation: fadeIn .25s ease-in-out;
+    flex-direction: column;
 }
 
 .wizard-step.active {
-    display: block;
+    display: flex;
 }
 
 /* ===== Fade Animation ===== */
@@ -89,7 +82,7 @@
 
 /* ===== Navigation Buttons ===== */
 .wizard-nav {
-    margin-top: 30px;
+    margin-top: auto;
     display: flex;
     justify-content: flex-end;
     gap: 10px;

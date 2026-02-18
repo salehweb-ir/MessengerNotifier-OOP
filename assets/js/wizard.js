@@ -87,16 +87,76 @@ document.getElementById('mni-wizard-form').addEventListener('submit', function (
 
             container.insertAdjacentHTML('beforeend', `
                 <fieldset style="margin-bottom:20px">
-                    <legend><strong>${id.toUpperCase()} Settings</strong></legend>
+                    <legend><strong>${id} Settings</strong></legend>
+
                     <label>Token<br>
                         <input type="text" name="settings[config][${id}][token]" style="width:100%">
                     </label><br><br>
+
                     <label>Channel ID<br>
                         <input type="text" name="settings[config][${id}][channel]" style="width:100%">
-                    </label>
+                    </label><br><br>
+
+                    <button type="button" onclick="testMessenger('${id}')">
+                        🧪 Test Connection
+                    </button>
                 </fieldset>
             `);
         });
     }
-
 });
+
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('mni-test-btn')) {;
+
+        const box = e.target.closest('.mni-config-box');
+        const messenger = box.dataset.messenger;
+        const token = box.querySelector('.mni-token').value;
+        const channel = box.querySelector('.mni-channel').value;
+        const resultEl = box.querySelector('.mni-test-result');
+
+        resultEl.textContent = 'Sending...';
+
+        fetch(mni-Wizard.ajaxurl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                action: 'mni_free_test_messenger',
+                messenger: messenger,
+                token: token,
+                channel: channel,
+                nonce: mniWizard.nonce
+            })
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.success) {
+                resultEl.textContent = '✅ Success';
+            } else {
+                resultEl.textContent = '❌ ' + (res.data || 'Error');
+            }
+        })
+        .catch(() => {
+            resultEl.textContent = '❌ Network error';
+        });
+    }});
+
+    function testMessenger(id) {
+        const token   = document.querySelector(`[name="settings[config][${id}][token]"]`).value;
+        const channel = document.querySelector(`[name="settings[config][${id}][channel]"]`).value;
+
+        const data = new FormData();
+        data.append('action', 'mni_test_messenger');
+        data.append('messenger', id);
+        data.append('config[token]', token);
+        data.append('config[channel]', channel);
+
+        fetch(ajaxurl, {
+            method: 'POST',
+            body: data
+        })
+        .then(res => res.json())
+        .then(res => {
+            alert(res.success ? '✅ اتصال موفق' : '❌ خطا: ' + res.data.message);
+        });
+    }

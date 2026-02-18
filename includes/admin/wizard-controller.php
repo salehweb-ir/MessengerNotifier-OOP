@@ -104,8 +104,6 @@ class MNI_Free_Wizard_Controller {
         $result = mni_free_messenger_manager::instance()
             ->send_test( $messenger, $config );
 
-            error_log("messenger: " . $messenger . "\nconfig: " . print_r($config,true) . "\nresult: " . $result);
-
         if ( ! empty( $result['success'] ) ) {
             wp_send_json_success( $result );
         }

@@ -73,7 +73,6 @@ class MNI_Free_Registry {
         'page_templates' => self::page_templates(),
       ];
       
-      error_log("all settings data: " . print_r($all_settings_data,true));
       return $all_settings_data;
     }
 }

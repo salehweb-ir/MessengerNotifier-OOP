@@ -4,9 +4,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 require_once MNI_FREE_PATH . 'includes/traits/singleton.php';
 require_once MNI_FREE_PATH . 'includes/messengers/MessengerInterface.php';
 require_once MNI_FREE_PATH . 'includes/messengers/eitaa.php';
+require_once MNI_FREE_PATH . 'includes/messengers/bale.php';
 
 use MessengerNotifier\Messengers\MessengerInterface;
 use MessengerNotifier\Messengers\Eitaa;
+use MessengerNotifier\Messengers\Bale;
 
 class mni_free_messenger_manager {
     use mni_singleton;
@@ -24,6 +26,7 @@ class mni_free_messenger_manager {
 
         $class_map = [
             'eitaa' => \MessengerNotifier\Messengers\Eitaa::class,
+            'bale' => \MessengerNotifier\Messengers\Bale::class,
             // future: 'telegram' => Telegram::class,
         ];
 
@@ -60,6 +63,7 @@ class mni_free_messenger_manager {
 
         $class_map = [
             'eitaa' => Eitaa::class,
+            'bale' => Bale::class,
         ];
 
         foreach ( $active as $messenger_id ) {

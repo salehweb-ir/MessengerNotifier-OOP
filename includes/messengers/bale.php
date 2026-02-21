@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once MNI_FREE_PATH . 'includes/traits/singleton.php';
 
-class Eitaa implements MessengerInterface {
+class Bale implements MessengerInterface {
 
     use \mni_singleton;
 
@@ -24,8 +24,8 @@ class Eitaa implements MessengerInterface {
             // 👈 حالت عادی (از تنظیمات)
             $settings = get_option( 'mni_free_settings', [] );
 
-            $this->token   = $settings['config']['eitaa']['token'] ?? '';
-            $this->channel = $settings['config']['eitaa']['channel'] ?? '';
+            $this->token   = $settings['config']['bale']['token'] ?? '';
+            $this->channel = $settings['config']['bale']['channel'] ?? '';
         }
     }
 
@@ -34,14 +34,14 @@ class Eitaa implements MessengerInterface {
      * Messenger unique ID
      */
     public function get_id(): string {
-        return 'eitaa';
+        return 'bale';
     }
 
     /**
      * Human-readable name
      */
     public function get_name(): string {
-        return 'Eitaa';
+        return 'Bale';
     }
 
     /**
@@ -54,7 +54,7 @@ class Eitaa implements MessengerInterface {
         $token      = $this->token;
         $channel_id = $this->channel;
 
-        $url = "https://eitaayar.ir/api/{$token}/sendMessage";
+        $url = "https://tapi.bale.ai/bot$token/sendMessage";
 
         $body = [
             'chat_id'    => $channel_id,

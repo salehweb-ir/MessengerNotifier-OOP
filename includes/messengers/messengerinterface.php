@@ -20,7 +20,7 @@ interface MessengerInterface {
     /**
      * Check if messenger is configured correctly
      */
-    public function is_configured(): bool;
+    // public function is_configured(): bool;
 
     /**
      * Send a text message

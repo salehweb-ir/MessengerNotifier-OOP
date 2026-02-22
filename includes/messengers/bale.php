@@ -59,7 +59,6 @@ class Bale implements MessengerInterface {
         $body = [
             'chat_id'    => $channel_id,
             'text'       => $message . ( $type ? "\n\n#" . $type : '' ),
-            'parse_mode' => 'HTML',
         ];
 
         $response = wp_remote_post( $url, [

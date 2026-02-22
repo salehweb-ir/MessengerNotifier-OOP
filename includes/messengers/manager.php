@@ -55,7 +55,9 @@ class mni_free_messenger_manager {
 
     private function load_messengers() : void {
 
-        $active = get_option( 'mni_free_messengers', [] );
+        $settings = get_option('mni_free_settings', []);
+
+        $active = $settings['messengers'] ?? [];
 
         if ( ! is_array( $active ) ) {
             return;

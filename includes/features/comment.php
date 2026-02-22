@@ -30,6 +30,7 @@ class mni_free_feature_comment {
     public function handle_new_comment( $comment_ID, $comment_approved ) {
 
         $comment = get_comment( $comment_ID );
+        
         if ( ! $comment ) {
             return;
         }
@@ -46,7 +47,7 @@ class mni_free_feature_comment {
         if (! $message) {
             return;
         }
-        $manager->send($message, 'comment');
+        $manager->send($message, $comment->comment_type == 'comment' ? 'comment' : 'product_review');
 
     }
 

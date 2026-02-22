@@ -157,6 +157,6 @@ document.getElementById('mni-wizard-form').addEventListener('submit', function (
         })
         .then(res => res.json())
         .then(res => {
-            alert(res.success ? '✅ اتصال موفق' : '❌ خطا: ' + res.data.message);
+            alert(res.success ? '✅ اتصال موفق ' : '❌ خطا: ' + res.data.message);
         });
     }

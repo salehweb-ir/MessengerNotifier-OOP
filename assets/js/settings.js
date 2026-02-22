@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // تب اول پیش‌فرض
+    // default first tab
     activateTab('contact');
 
     /* ---------------- Messenger toggle ---------------- */
@@ -50,10 +50,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // وضعیت اولیه
+    // init status
     updateMessengerConfigs();
 
-    // تغییرات داینامیک
+    // dynamic changes
     messengerCheckboxes.forEach(cb => {
         cb.addEventListener('change', updateMessengerConfigs);
     });

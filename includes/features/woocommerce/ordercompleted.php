@@ -9,27 +9,25 @@ class mni_free_feature_ordercompleted {
     public function __construct() {
 
         // Feature toggle check
-        $features = get_option( 'mni_free_features', [] );
+        $settings = get_option('mni_free_settings', []);
 
-        $this->enabled = (empty( $features['newordercompleted'] ) ? false : true);
+        $features = $settings['actions'] ?? [];
+
+
+        $this->enabled = (isset( $features['ordercompleted'] ) ? true : false);
 
     add_action( 'plugins_loaded', [ $this, 'maybe_hook' ] );
 }
 
-public function maybe_hook(): void {
+    public function maybe_hook(): void {
 
-    if ( ! class_exists( 'WooCommerce' ) ) {
-        // error_log('[MNI] WooCommerce not active');
-        return;
+        add_action(
+            'woocommerce_payment_complete',
+            [ $this, 'handle_order_completed' ],
+            10,
+            1
+        );
     }
-
-    add_action(
-        'woocommerce_payment_complete',
-        [ $this, 'handle_order_completed' ],
-        10,
-        1
-    );
-}
 
 
     /**

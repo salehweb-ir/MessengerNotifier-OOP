@@ -16,24 +16,32 @@ class mni_free_init {
 
         // Load admin or frontend logic
         if ( is_admin() ) {
-            require_once MNI_FREE_PATH . 'includes/admin/admin.php';
-            mni_free_admin::instance();
+            if(file_exists( MNI_FREE_PATH . 'includes/admin/admin.php' ) ) {
+                require_once MNI_FREE_PATH . 'includes/admin/admin.php';
+                new MNI_Free_Registry();
+            }
 
             // Wizard (THIS IS THE IMPORTANT PART)
-            require_once MNI_FREE_PATH . 'includes/admin/wizard-controller.php';
-            new MNI_Free_Wizard_Controller();
+            if(file_exists( MNI_FREE_PATH . 'includes/admin/wizard-controller.php' ) ) {
+                require_once MNI_FREE_PATH . 'includes/admin/wizard-controller.php';
+                new MNI_Free_Wizard_Controller();
+            }
             
             // Settings (THIS IS THE IMPORTANT PART)
-            require_once MNI_FREE_PATH . 'includes/admin/settings-controller.php';
-            new MNI_Free_Settings_Controller();
+            if(file_exists( MNI_FREE_PATH . 'includes/admin/settings-controller.php' ) ) {
+                require_once MNI_FREE_PATH . 'includes/admin/settings-controller.php';
+                new MNI_Free_Settings_Controller();
+            }
 
             // Settings page (if exists)
             if ( file_exists( MNI_FREE_PATH . 'includes/admin/settings.php' ) ) {
                 require_once MNI_FREE_PATH . 'includes/admin/settings.php';
             }
             
-             require_once MNI_FREE_PATH . 'includes/core/registry.php';
-             new MNI_Free_Registry();
+            if(file_exists( MNI_FREE_PATH . 'includes/admin/registry.php' ) ) {
+                require_once MNI_FREE_PATH . 'includes/admin/registry.php';
+                new MNI_Free_Registry();
+            }
             
             // messengers manager page (if exists)
             if ( file_exists( MNI_FREE_PATH . 'includes/messengers/manager.php' ) ) {
@@ -41,10 +49,11 @@ class mni_free_init {
             }
 
         } else {
-                  // require_once MNI_FREE_PATH . 'includes/frontend/template_loader.php';
-                  require_once MNI_FREE_PATH . 'includes/frontend/shortcode_contact.php';
-                  
-                  new MNI_Free_Shortcode_Contact();
+            // require_once MNI_FREE_PATH . 'includes/frontend/shortcode_contact.php';
+            if(file_exists( MNI_FREE_PATH . 'includes/frontend/shortcode_contact.php' ) ) {
+                require_once MNI_FREE_PATH . 'includes/frontend/shortcode_contact.php';
+                new MNI_Free_Shortcode_Contact();
+            }
         }
 
         // Load feature hooks
@@ -52,16 +61,25 @@ class mni_free_init {
     }
 
     private function load_features() {
+
         require_once MNI_FREE_PATH . 'includes/features/comment.php';
         mni_free_feature_comment::instance();
 
         require_once MNI_FREE_PATH . 'includes/features/newuser.php';
+        mni_free_newuser::instance();
         
-        require_once MNI_FREE_PATH . 'includes/features/woocommerce/ordercompleted.php';
-        mni_free_feature_ordercompleted::instance();
+
+        // load WooCommerce features after loading WooCommerce
+        add_action( 'woocommerce_loaded', function() {
+
+            require_once MNI_FREE_PATH . 'includes/features/woocommerce/ordercompleted.php';
+            mni_free_feature_ordercompleted::instance();
+
+        });
 
     }
 
+    // redirect to wizard after activating the plugin
     public function maybe_redirect_to_wizard() {
         if ( get_transient( '_mni_free_activation_redirect' ) ) {
             delete_transient( '_mni_free_activation_redirect' );

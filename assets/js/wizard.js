@@ -1,3 +1,10 @@
+
+//!SECTION Connect to wordpress i18n for translations
+const { __ } = wp.i18n;
+
+/*!SECTION  
+ * wizard steps
+ */
 document.addEventListener('DOMContentLoaded', function () {
 
     const steps = document.querySelectorAll('.wizard-step');
@@ -57,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
     
-    /* =========================
+/* =========================
  * PREPARE DATA BEFORE SUBMIT
  * ========================= */
 document.getElementById('mni-wizard-form').addEventListener('submit', function () {
@@ -106,57 +113,29 @@ document.getElementById('mni-wizard-form').addEventListener('submit', function (
     }
 });
 
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('mni-test-btn')) {;
+/*
+ * test messenger connection
+ */
+function testMessenger(id) {
+    const token   = document.querySelector(`[name="settings[config][${id}][token]"]`).value;
+    const channel = document.querySelector(`[name="settings[config][${id}][channel]"]`).value;
 
-        const box = e.target.closest('.mni-config-box');
-        const messenger = box.dataset.messenger;
-        const token = box.querySelector('.mni-token').value;
-        const channel = box.querySelector('.mni-channel').value;
-        const resultEl = box.querySelector('.mni-test-result');
+    const data = new FormData();
+    data.append('action', 'mni_test_messenger');
+    data.append('messenger', id);
+    data.append('config[token]', token);
+    data.append('config[channel]', channel);
 
-        resultEl.textContent = 'Sending...';
-
-        fetch(mni-Wizard.ajaxurl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                action: 'mni_free_test_messenger',
-                messenger: messenger,
-                token: token,
-                channel: channel,
-                nonce: mniWizard.nonce
-            })
-        })
-        .then(r => r.json())
-        .then(res => {
-            if (res.success) {
-                resultEl.textContent = '✅ Success';
-            } else {
-                resultEl.textContent = '❌ ' + (res.data || 'Error');
-            }
-        })
-        .catch(() => {
-            resultEl.textContent = '❌ Network error';
-        });
-    }});
-
-    function testMessenger(id) {
-        const token   = document.querySelector(`[name="settings[config][${id}][token]"]`).value;
-        const channel = document.querySelector(`[name="settings[config][${id}][channel]"]`).value;
-
-        const data = new FormData();
-        data.append('action', 'mni_test_messenger');
-        data.append('messenger', id);
-        data.append('config[token]', token);
-        data.append('config[channel]', channel);
-
-        fetch(ajaxurl, {
-            method: 'POST',
-            body: data
-        })
-        .then(res => res.json())
-        .then(res => {
-            alert(res.success ? '✅ اتصال موفق ' : '❌ خطا: ' + res.data.message);
-        });
-    }
+    fetch(ajaxurl, {
+        method: 'POST',
+        body: data
+    })
+    .then(res => res.json())
+    .then(res => {
+        alert(
+            res.success
+                ? '✅ ' + __('OK', 'mni')
+                : '❌ ' + __('Error:', 'mni') + ' ' + res.data.message
+        );
+    });
+}

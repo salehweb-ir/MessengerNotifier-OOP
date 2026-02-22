@@ -10,9 +10,7 @@ class MNI_Free_Wizard_Controller {
         add_action( 'wp_ajax_mni_test_messenger', [ $this, 'ajax_test_messenger' ] );
     }
 
-
-
-
+    /*!SECTION save wizard settings */
     public function save() {
 
         if ( ! current_user_can( 'manage_options' ) ) {
@@ -58,7 +56,7 @@ class MNI_Free_Wizard_Controller {
         $slug     = sanitize_title( $contact_settings['slug'] ?? 'nashenas' );
         $template = sanitize_text_field( $contact_settings['template'] ?? '' );
 
-        // 1️⃣ اگر صفحه‌ای با این اسلاگ قبلاً وجود دارد، همان را استفاده کن
+        // if page with the same slug already exists, return its ID instead of creating a new one
         $existing = get_posts([
             'name'        => $slug,
             'post_type'   => 'page',
@@ -71,7 +69,7 @@ class MNI_Free_Wizard_Controller {
             return (int) $existing[0];
         }
 
-        // 2️⃣ ایجاد صفحه جدید
+        // create new page
         $page_id = wp_insert_post([
             'post_title'   => $title,
             'post_name'    => $slug,
@@ -84,7 +82,7 @@ class MNI_Free_Wizard_Controller {
             return 0;
         }
 
-        // 3️⃣ اگر قالب انتخاب شده باشد، روی صفحه ست شود
+        // if template is specified, update page meta
         if ( $template ) {
             update_post_meta( $page_id, '_wp_page_template', $template );
         }

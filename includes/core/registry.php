@@ -50,10 +50,10 @@ class MNI_Free_Registry {
             $templates[ $slug ] = ucwords( str_replace( '-', ' ', $slug ) );
         }
       
-        // مرتب‌سازی الفبایی
+        // sorting the templates
         ksort( $templates );
       
-        // اگر default وجود داشت، بیار اول
+        // bring default at first if exists 
         if ( isset( $templates['default'] ) ) {
       
             $default = [ 'default' => $templates['default'] ];
@@ -65,10 +65,7 @@ class MNI_Free_Registry {
         return $templates;
       }
 
-      
-      
-
-    
+    // return all required settings
     public static function all() : array {
        $all_settings_data = [
         'messengers'     => self::messengers(),

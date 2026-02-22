@@ -39,21 +39,24 @@ class mni_free_admin {
             __( 'Messenger Notifier', 'messengernotifier' ),
             __( 'Messenger Notifier', 'messengernotifier' ),
             'manage_options',
-            'mni_free',
+            'mni_free_settings',
             [ $this, 'render_settings_page' ],
             'dashicons-megaphone',
             65
         );
         
-        // Wizard (submenu)
-        add_submenu_page(
-            'mni_free',
-            __( 'Messenger notifier wizard', 'messengernotifier' ),
-            __( 'wizard', 'messengernotifier' ),
-            'manage_options',
-            'mni_free_wizard',
-            [ $this, 'render_wizard_page' ]
-        );
+        $wizard_completed = get_option('mni_free_wizard_completed', 0);
+
+        if ( ! $wizard_completed ) {
+            add_submenu_page(
+                'mni_free',
+                __( 'Messenger notifier wizard', 'messengernotifier' ),
+                __( 'wizard', 'messengernotifier' ),
+                'manage_options',
+                'mni_free_wizard',
+                [ $this, 'render_wizard_page' ]
+            );
+        }
         
         // Settings (submenu)
         add_submenu_page(
@@ -103,9 +106,15 @@ class mni_free_admin {
         wp_enqueue_script(
             'mni-free-wizard',
             MNI_FREE_URL . 'assets/js/wizard.js',
-            [ 'jquery' ],
+            [ 'jquery' , 'wp-i18n'  ],
             MNI_FREE_VERSION,
             true
+        );
+
+        wp_set_script_translations(
+            'mni-free-wizard',   // script handle
+            'mni',               // plugin text domain
+            MNI_FREE_PATH . 'languages' // path to translation files
         );
         
         wp_enqueue_script(

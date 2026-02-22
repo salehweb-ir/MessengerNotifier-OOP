@@ -16,12 +16,7 @@ class mni_free_feature_comment {
 
     private function __construct() {
 
-        $settings = get_option( 'mni_free_settings', [] );
-
-        $this->enabled = ! empty( $settings['actions'] )
-            && in_array( 'comment', $settings['actions'], true );
-
-        add_action( 'comment_post', [ $this, 'handle_new_comment' ], 10, 2 );
+            add_action( 'comment_post', [ $this, 'handle_new_comment' ], 10, 2 );
     }
 
     /**

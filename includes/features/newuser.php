@@ -7,9 +7,7 @@ class mni_free_newuser {
     use mni_singleton;
 
     private function __construct() {
-        if ( get_option( 'mni_free_action_newuser', 1 ) ) {
-            add_action( 'user_register', [ $this, 'notify_new_user' ], 10, 1 );
-        }
+        add_action( 'user_register', [ $this, 'notify_new_user' ], 10, 1 );
     }
 
     /**

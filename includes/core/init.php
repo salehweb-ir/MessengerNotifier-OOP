@@ -18,7 +18,7 @@ class mni_free_init {
         if ( is_admin() ) {
             if(file_exists( MNI_FREE_PATH . 'includes/admin/admin.php' ) ) {
                 require_once MNI_FREE_PATH . 'includes/admin/admin.php';
-                new MNI_Free_Registry();
+                mni_free_admin::instance();    
             }
 
             // Wizard (THIS IS THE IMPORTANT PART)
@@ -60,23 +60,58 @@ class mni_free_init {
         $this->load_features();
     }
 
+    function mni_get_settings() {
+        static $settings = null;
+
+        if ($settings === null) {
+            $settings = get_option('mni_free_settings', []);
+        }
+
+        return $settings;
+    }
+
     private function load_features() {
 
-        require_once MNI_FREE_PATH . 'includes/features/comment.php';
-        mni_free_feature_comment::instance();
+        $features = $this->mni_get_settings()['actions'] ?? [];
 
-        require_once MNI_FREE_PATH . 'includes/features/newuser.php';
-        mni_free_newuser::instance();
-        
+        $map = [
+            'comment' => [
+                'file'  => 'includes/features/comment.php',
+                'class' => 'mni_free_feature_comment',
+                'hook'  => null, // instant load
+            ],
+            'new_user' => [
+                'file'  => 'includes/features/newuser.php',
+                'class' => 'mni_free_newuser',
+                'hook'  => null, // instant load
+            ],
+            'ordercompleted' => [
+                'file'  => 'includes/features/woocommerce/ordercompleted.php',
+                'class' => 'mni_free_feature_ordercompleted',
+                'hook'  => 'woocommerce_loaded', // load after WooCommerce is loaded
+            ],
+        ];
 
-        // load WooCommerce features after loading WooCommerce
-        add_action( 'woocommerce_loaded', function() {
+        foreach ($map as $key => $feature) {
 
-            require_once MNI_FREE_PATH . 'includes/features/woocommerce/ordercompleted.php';
-            mni_free_feature_ordercompleted::instance();
+            if (!in_array($key, $features, true)) {
+                continue;
+            }
 
-        });
+            // if the feature has a specific hook, load it on that hook. Otherwise, load immediately
+            if (!empty($feature['hook'])) {
 
+                add_action($feature['hook'], function() use ($feature) {
+                    require_once MNI_FREE_PATH . $feature['file'];
+                    $feature['class']::instance();
+                });
+
+            } else {
+                // No specific hook, load immediately
+                require_once MNI_FREE_PATH . $feature['file'];
+                $feature['class']::instance();
+            }
+        }
     }
 
     // redirect to wizard after activating the plugin

@@ -15,7 +15,8 @@ class MNI_Free_Shortcode_Contact {
 
     public function render() {
 
-        $settings = get_option( 'mni_free_settings', [] );
+        $settings = mni_free_init::instance()->mni_get_settings();
+
         $template = $settings['contact_page']['template'] ?? 'default';
         $template = sanitize_key( $template );
 

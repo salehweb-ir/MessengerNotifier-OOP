@@ -1,9 +1,11 @@
 <?php
 /**
- * Plugin Name: Messenger Notifier OOP
+ * Plugin Name: Messenger Notifier - Act Faster 🏎️
  * Description: Sends WordPress notifications to supported messengers like Eitaa.
  * Version: 2.0.0
  * Author: Salehweb
+ * Author URI: https://salehweb.ir
+ * Plugin URI: https://eitaa.com/messengernotifier
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Security: No direct access

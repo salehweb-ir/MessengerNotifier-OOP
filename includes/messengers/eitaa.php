@@ -22,7 +22,7 @@ class Eitaa implements MessengerInterface {
             $this->channel = $config['channel'] ?? '';
         } else {
             // 👈 حالت عادی (از تنظیمات)
-            $settings = get_option( 'mni_free_settings', [] );
+            $settings = mni_free_init::instance()->mni_get_settings();
 
             $this->token   = $settings['config']['eitaa']['token'] ?? '';
             $this->channel = $settings['config']['eitaa']['channel'] ?? '';
@@ -48,8 +48,6 @@ class Eitaa implements MessengerInterface {
      * Send message to Eitaa
      */
     public function send( string $message, string $type = '' ): array {
-
-        $settings = get_option( 'mni_free_settings', [] );
 
         $token      = $this->token;
         $channel_id = $this->channel;

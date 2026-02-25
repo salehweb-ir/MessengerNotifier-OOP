@@ -72,47 +72,31 @@ class mni_free_init {
 
     private function load_features() {
 
-        $features = $this->mni_get_settings()['actions'] ?? [];
+        $enabled = $this->mni_get_settings()['actions'] ?? [];
+        $features = MNI_Free_Registry::actions();
 
-        $map = [
-            'comment' => [
-                'file'  => 'includes/features/comment.php',
-                'class' => 'mni_free_feature_comment',
-                'hook'  => null, // instant load
-            ],
-            'new_user' => [
-                'file'  => 'includes/features/newuser.php',
-                'class' => 'mni_free_newuser',
-                'hook'  => null, // instant load
-            ],
-            'ordercompleted' => [
-                'file'  => 'includes/features/woocommerce/ordercompleted.php',
-                'class' => 'mni_free_feature_ordercompleted',
-                'hook'  => 'woocommerce_loaded', // load after WooCommerce is loaded
-            ],
-        ];
+        foreach ($features as $key => $feature) {
 
-        foreach ($map as $key => $feature) {
-
-            if (!in_array($key, $features, true)) {
+            // if isn't enable continue
+            if (!in_array($key, $enabled, true)) {
                 continue;
             }
 
-            // if the feature has a specific hook, load it on that hook. Otherwise, load immediately
-            if (!empty($feature['hook'])) {
+            // check dependency
+            if (!empty($feature['hook']) && !class_exists($feature['hook'])) {
+                continue;
+            }
 
-                add_action($feature['hook'], function() use ($feature) {
-                    require_once MNI_FREE_PATH . $feature['file'];
-                    $feature['class']::instance();
-                });
+            // load file
+            require_once MNI_FREE_PATH . $feature['file'];
 
-            } else {
-                // No specific hook, load immediately
-                require_once MNI_FREE_PATH . $feature['file'];
+            // run class
+            if (class_exists($feature['class'])) {
                 $feature['class']::instance();
             }
         }
     }
+
 
     // redirect to wizard after activating the plugin
     public function maybe_redirect_to_wizard() {

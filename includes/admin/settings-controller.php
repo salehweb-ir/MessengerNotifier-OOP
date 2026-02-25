@@ -32,7 +32,7 @@ class MNI_Free_Settings_Controller {
         /* ---------------------------------
          * Old Settings (for page ID)
          * --------------------------------- */
-        $old_settings = (array) get_option( 'mni_free_settings', [] );
+        $old_settings = (array)mni_free_init::instance()->mni_get_settings();
         $page_id      = $old_settings['contact_page']['id'] ?? 0;
 
         /* ---------------------------------

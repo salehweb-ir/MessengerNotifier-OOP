@@ -52,10 +52,12 @@ class mni_free_messenger_manager {
         return $instance->send( '✅ Test message from Messenger Notifier','test' );
     }
 
-
+    /*!SECTION
+    * load active messengers
+    */
     private function load_messengers() : void {
 
-        $settings = get_option('mni_free_settings', []);
+        $settings = mni_free_init::instance()->mni_get_settings();
 
         $active = $settings['messengers'] ?? [];
 

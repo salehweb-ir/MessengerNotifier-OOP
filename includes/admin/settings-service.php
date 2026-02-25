@@ -8,14 +8,8 @@ class MNI_Free_Settings_Service {
     private array $settings;
 
     public function __construct() {
-        $this->settings = (array) get_option( 'mni_free_settings', [] );
-    }
+        $this->settings = (array)mni_free_init::instance()->mni_get_settings();
 
-    /* -------------------------------------------------
-     * Raw Settings
-     * ------------------------------------------------- */
-    public function get_settings(): array {
-        return $this->settings;
     }
 
     /* -------------------------------------------------

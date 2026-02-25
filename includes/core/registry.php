@@ -3,7 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class MNI_Free_Registry {
 
-    /* ---------- Messengers ---------- */
+    /**
+     * Supported messengers
+     **/
     public static function messengers() : array {
           return [
             'eitaa' => [
@@ -17,9 +19,9 @@ class MNI_Free_Registry {
           ];
     }
 
-    /**!SECTION
-     * available actions in plugin
-     */
+    /**
+     * Supported actions
+     **/
     public static function actions() : array {
       return [
           'comment' => [
@@ -44,7 +46,9 @@ class MNI_Free_Registry {
   }
 
 
-    /* ---------- Page Templates (Frontend) ---------- */
+    /**
+     * Page Templates (Frontend)
+     **/
       public static function page_templates(): array {
         $path = MNI_FREE_PATH . 'views/frontend/css/';
         $files = glob( $path . '*.css' );
@@ -76,7 +80,9 @@ class MNI_Free_Registry {
         return $templates;
       }
 
-    // return all required settings
+    /**
+     * Return all required data
+     **/ 
     public static function all() : array {
        $all_settings_data = [
         'messengers'     => self::messengers(),

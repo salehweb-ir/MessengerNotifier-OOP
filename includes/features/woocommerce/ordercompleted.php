@@ -4,8 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class mni_free_feature_ordercompleted {
     use mni_singleton;
 
-    private bool $enabled = false;
-
     public function __construct() {
 
         add_action(
@@ -27,17 +25,10 @@ class mni_free_feature_ordercompleted {
         }
 
         $message = $this->build_message( $order );
-        
-        // Feature disabled → log message only
-        if ( ! $this->enabled ) {
-            error_log( '[MNI Woo Order Disabled] ' . $message );
-            // return;
-        }
 
         // Feature enabled → send to messengers
         $manager = mni_free_messenger_manager::instance();
         $manager->send($message, 'new_order');
-
     }
 
     /**

@@ -22,7 +22,7 @@ class Bale implements MessengerInterface {
             $this->channel = $config['channel'] ?? '';
         } else {
             // 👈 حالت عادی (از تنظیمات)
-            $settings = mni_free_init::instance()->mni_get_settings();
+            $settings = get_option('mni_free_settings', []);
 
             $this->token   = $settings['config']['bale']['token'] ?? '';
             $this->channel = $settings['config']['bale']['channel'] ?? '';

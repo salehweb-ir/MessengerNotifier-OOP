@@ -10,7 +10,7 @@ class MNI_Free_Wizard_Controller {
         add_action( 'wp_ajax_mni_test_messenger', [ $this, 'ajax_test_messenger' ] );
     }
 
-    /*!SECTION save wizard settings */
+    /* save wizard settings */
     public function save() {
 
         if ( ! current_user_can( 'manage_options' ) ) {

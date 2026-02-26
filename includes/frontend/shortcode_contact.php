@@ -9,7 +9,7 @@ class MNI_Free_Shortcode_Contact {
     public function __construct() {
         add_shortcode( 'mni_contact_form', [ $this, 'render' ] );
 
-        // ✅ پردازش فرم قبل از خروجی
+        // Proccessing the form before output
         add_action( 'init', [ $this, 'handle_form_submit' ] );
     }
 
@@ -29,7 +29,7 @@ class MNI_Free_Shortcode_Contact {
 
         ob_start();
 
-        // ✅ پیام موفقیت
+        // Successful message
         if ( isset( $_GET['mni_sent'] ) ) {
             echo '<div class="mni-success">Message sent successfully.</div>';
         }
@@ -58,7 +58,7 @@ class MNI_Free_Shortcode_Contact {
     }
 
     /**
-     * ✅ Handle form submit safely (before output)
+     * Handle form submit safely (before output)
      */
     public function handle_form_submit(): void {
 
@@ -83,7 +83,7 @@ class MNI_Free_Shortcode_Contact {
             return;
         }
 
-        // ارسال به Manager
+        // Send to Manager
         $manager = mni_free_messenger_manager::instance();
         $manager->send( $message, 'contact_form' );
 

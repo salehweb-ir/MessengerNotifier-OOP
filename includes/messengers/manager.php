@@ -17,18 +17,17 @@ class mni_free_messenger_manager {
      * @var MessengerInterface[]
      */
     private $messengers = [];
+    private $class_map = [];
 
     private function __construct() {
+        $this->class_map = [
+            'eitaa' => \MessengerNotifier\Messengers\Eitaa::class,
+            'bale' => \MessengerNotifier\Messengers\Bale::class,
+        ];
         $this->load_messengers();
     }
 
     public function send_test( string $messenger_id, array $config ) : array {
-
-        $class_map = [
-            'eitaa' => \MessengerNotifier\Messengers\Eitaa::class,
-            'bale' => \MessengerNotifier\Messengers\Bale::class,
-            // future: 'telegram' => Telegram::class,
-        ];
 
         if ( ! isset( $class_map[ $messenger_id ] ) ) {
             return [
@@ -37,7 +36,7 @@ class mni_free_messenger_manager {
             ];
         }
 
-        $class = $class_map[ $messenger_id ];
+        $class = $this->class_map[ $messenger_id ];
 
         if ( ! class_exists( $class ) ) {
             return [
@@ -47,7 +46,7 @@ class mni_free_messenger_manager {
         }
 
         /** @var MessengerInterface $instance */
-        $instance = new $class( $config ); // 👈 مهم: ارسال تنظیمات فرم
+        $instance = new $class( $config ); // Sending settings
 
         return $instance->send( '✅ Test message from Messenger Notifier','test' );
     }
@@ -65,17 +64,12 @@ class mni_free_messenger_manager {
             return;
         }
 
-        $class_map = [
-            'eitaa' => Eitaa::class,
-            'bale' => Bale::class,
-        ];
-
         foreach ( $active as $messenger_id ) {
 
-            if ( isset( $class_map[ $messenger_id ] ) ) {
+            if ( isset( $this->class_map[ $messenger_id ] ) ) {
 
             
-                $class = $class_map[ $messenger_id ];
+                $class = $this->class_map[ $messenger_id ];
                 $this->messengers[ $messenger_id ] = $class::instance();
             }
         }

@@ -11,9 +11,9 @@ class MNI_Free_Template_Loader {
 
         $file = self::MNI_TEMPLATE_PATH . $template . '.css';
 
-        // اگر قالب وجود نداشت → fallback
+        // If file doesn't exist load default template
         if ( ! file_exists( $file ) ) {
-            $file = self::MNI_TEMPLATE_PATH . 'mni_default.css';
+            $file = self::MNI_TEMPLATE_PATH . 'default.css';
         }
 
         ob_start();

@@ -72,8 +72,8 @@ class mni_free_init {
 
     private function load_features() {
 
-        $enabled = $this->mni_get_settings()['actions'] ?? [];
         $features = MNI_Free_Registry::actions();
+        $enabled = $this->mni_get_settings()['actions'] ?? [];
 
         foreach ($features as $key => $feature) {
 

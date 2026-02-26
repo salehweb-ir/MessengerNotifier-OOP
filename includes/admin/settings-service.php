@@ -75,12 +75,13 @@ class MNI_Free_Settings_Service {
             ];
         }
 
+        $template = get_post_meta( $page_id, 'mni_contact_template', true );
         return [
             'id'       => $page_id,
             'title'    => $post->post_title,
             'slug'     => $post->post_name,
             'status'   => $post->post_status,
-            'template' => get_page_template_slug( $page_id ),
+            'template' => $template ?? 'default',
         ];
     }
 

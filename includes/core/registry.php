@@ -25,22 +25,22 @@ class MNI_Free_Registry {
     public static function actions() : array {
       return [
           'comment' => [
-              'label'    => __( 'New Comment', 'messengernotifier' ),
-              'file'     => 'includes/features/comment.php',
-              'class'    => 'mni_free_feature_comment',
-              'hook' => null,
+              'label' => __( 'New Comment', 'messengernotifier' ),
+              'file'  => 'includes/features/comment.php',
+              'class' => 'mni_free_feature_comment',
+              'hook'  => '',
           ],
           'new_user' => [
-              'label'    => __( 'New User Registration', 'messengernotifier' ),
-              'file'     => 'includes/features/newuser.php',
-              'class'    => 'mni_free_feature_newuser',
-              'hook' => null,
+              'label' => __( 'New User Registration', 'messengernotifier' ),
+              'file'  => 'includes/features/newuser.php',
+              'class' => 'mni_free_feature_newuser',
+              'hook'  => '',
           ],
           'ordercompleted' => [
-              'label'    => __( 'WooCommerce Order Completed', 'messengernotifier' ),
-              'file'     => 'includes/features/woocommerce/ordercompleted.php',
-              'class'    => 'mni_free_feature_ordercompleted',
-              'hook' => 'woocommerce_loaded',
+              'label' => __( 'WooCommerce Order Completed', 'messengernotifier' ),
+              'file'  => 'includes/features/woocommerce/ordercompleted.php',
+              'class' => 'mni_free_feature_ordercompleted',
+              'hook'  => 'woocommerce_loaded',
           ],
       ];
   }

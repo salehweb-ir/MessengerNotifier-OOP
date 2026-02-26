@@ -5,9 +5,14 @@ class MNI_Free_Sanitizer {
 
     /**
      * Sanitize settings array (Wizard + Settings page compatible)
+     * Sanitize Messengers, Actions, Contact Page, and Messenger Configs
+     * - Messengers and Actions are sanitized as arrays of unique keys.
+     * - Contact Page is sanitized as an associative array with specific fields.
+     * - Messenger Configs are sanitized as nested associative arrays keyed by messenger ID.
      */
     public function sanitize_settings( array $input ): array {
 
+        // Sanitized output array
         $clean = [];
 
         /* ------------------------------
@@ -50,12 +55,12 @@ class MNI_Free_Sanitizer {
 
         if ( ! empty( $input['contact_page'] ) && is_array( $input['contact_page'] ) ) {
 
-            // Page ID (برای وقتی از صفحه تنظیمات ذخیره می‌شود)
+            // Page ID (for updates, not used in Wizard)
             if ( isset( $input['contact_page']['id'] ) ) {
                 $clean['contact_page']['id'] = absint( $input['contact_page']['id'] );
             }
 
-            // Title (فقط در Wizard اهمیت دارد)
+            // Title (for wizard, not used in updates)
             if ( isset( $input['contact_page']['title'] ) ) {
                 $clean['contact_page']['title'] = sanitize_text_field(
                     $input['contact_page']['title']

@@ -18,11 +18,6 @@ interface MessengerInterface {
     public function get_name(): string;
 
     /**
-     * Check if messenger is configured correctly
-     */
-    // public function is_configured(): bool;
-
-    /**
      * Send a text message
      */
     public function send( string $message, string $type = '' ): array;

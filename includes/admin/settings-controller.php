@@ -57,7 +57,7 @@ class MNI_Free_Settings_Controller {
         ) {
             update_post_meta(
                 $page_id,
-                '_wp_page_template',
+                'mni_page_template',
                 $settings['contact_page']['template']
             );
         }

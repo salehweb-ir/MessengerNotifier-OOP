@@ -11,7 +11,12 @@ class MNI_Free_Wizard_Service {
     }
 
     public function get_actions() : array {
-        $all = MNI_Free_Registry::actions();
-        return $all;
+        $features = MNI_Free_Registry::actions();
+        foreach ( $features as $key => $feature ) {
+            if (!empty($feature['hook']) && !class_exists($feature['hook'])) {
+                unset($features[$key]);
+            }
+        }
+        return $features;
     }
 }

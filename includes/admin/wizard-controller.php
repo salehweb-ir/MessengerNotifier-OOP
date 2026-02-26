@@ -84,7 +84,7 @@ class MNI_Free_Wizard_Controller {
 
         // if template is specified, update page meta
         if ( $template ) {
-            update_post_meta( $page_id, '_wp_page_template', $template );
+            update_post_meta( $page_id, 'mni_contact_template', $template );
         }
 
         return (int) $page_id;

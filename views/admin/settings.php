@@ -10,7 +10,7 @@ new MNI_Free_Settings_Controller();
 
 $page_id     = $contact['id'] ?? 0;
 $page_obj    = $page_id ? get_post( $page_id ) : null;
-$current_tpl = $page_id ? get_page_template_slug( $page_id ) : '';
+$current_tpl = $page_id ? get_post_meta( $page_id, 'mni_contact_template', true ) : 'default';
 ?>
 
 <div class="wrap">
@@ -26,8 +26,15 @@ $current_tpl = $page_id ? get_page_template_slug( $page_id ) : '';
         <input type="hidden" name="action" value="mni_free_save_settings">
         <?php wp_nonce_field( 'mni_free_settings_save' ); ?>
 
+        <h2 class="nav-tab-wrapper">
+            <a href="#tab-contact" class="nav-tab nav-tab-active">Contact Page</a>
+            <a href="#tab-messengers" class="nav-tab">Messengers</a>
+            <a href="#tab-actions" class="nav-tab">Actions</a>
+            <a href="#tab-config" class="nav-tab">Configuration</a>
+        </h2>
+
         <!-- ================= Contact Page Card ================= -->
-        <div class="postbox" style="margin-top:20px;">
+        <div id="tab-contact" class="mni-tab-content" style="display:block;margin-top:20px;">
             <div class="postbox-header">
                 <h2 class="hndle">Anonymous Contact Page</h2>
             </div>
@@ -99,7 +106,7 @@ $current_tpl = $page_id ? get_page_template_slug( $page_id ) : '';
         </div>
 
         <!-- ================= Messengers ================= -->
-        <div class="postbox" style="margin-top:20px;">
+        <div id="tab-messengers" class="mni-tab-content" style="display:none;margin-top:20px;">
             <div class="postbox-header">
                 <h2 class="hndle">Messengers</h2>
             </div>
@@ -119,7 +126,7 @@ $current_tpl = $page_id ? get_page_template_slug( $page_id ) : '';
         </div>
 
         <!-- ================= Actions ================= -->
-        <div class="postbox" style="margin-top:20px;">
+        <div id="tab-actions" class="mni-tab-content" style="display:none;margin-top:20px;">
             <div class="postbox-header">
                 <h2 class="hndle">Actions</h2>
             </div>
@@ -139,13 +146,16 @@ $current_tpl = $page_id ? get_page_template_slug( $page_id ) : '';
         </div>
 
         <!-- ================= Config ================= -->
-        <div class="postbox" style="margin-top:20px;">
+        <div id="tab-config" class="mni-tab-content" style="display:none;margin-top:20px;">
             <div class="postbox-header">
                 <h2 class="hndle">Messenger Configuration</h2>
             </div>
             <div class="inside">
 
                 <?php foreach ( $messengers as $id => $m ) :
+                    if ( ! $m['active'] ?? false ) {
+                        continue;
+                    }
                     $cfg = $service->get_config( $id );
                 ?>
                     <h4><?php echo esc_html( $m['label'] ); ?></h4>
@@ -182,3 +192,25 @@ $current_tpl = $page_id ? get_page_template_slug( $page_id ) : '';
 
     </form>
 </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tabs = document.querySelectorAll('.nav-tab');
+    const contents = document.querySelectorAll('.mni-tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            // activate the clicked tab
+            tabs.forEach(t => t.classList.remove('nav-tab-active'));
+            tab.classList.add('nav-tab-active');
+
+            // show corresponding content
+            contents.forEach(c => c.style.display = 'none');
+            document.querySelector(tab.getAttribute('href')).style.display = 'block';
+        });
+    });
+});
+</script>

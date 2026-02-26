@@ -17,11 +17,11 @@ class Bale implements MessengerInterface {
     public function __construct( array $config = [] ) {
 
         if ( ! empty( $config ) ) {
-            // 👈 برای تست اتصال
+            // For testing connection
             $this->token   = $config['token'] ?? '';
             $this->channel = $config['channel'] ?? '';
         } else {
-            // 👈 حالت عادی (از تنظیمات)
+            // Normal mode (from settings)
             $settings = get_option('mni_free_settings', []);
 
             $this->token   = $settings['config']['bale']['token'] ?? '';
@@ -45,7 +45,7 @@ class Bale implements MessengerInterface {
     }
 
     /**
-     * Send message to Eitaa
+     * Send message to Bale
      */
     public function send( string $message, string $type = '' ): array {
 

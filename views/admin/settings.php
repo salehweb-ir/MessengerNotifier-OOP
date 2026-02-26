@@ -10,7 +10,7 @@ new MNI_Free_Settings_Controller();
 
 $page_id     = $contact['id'] ?? 0;
 $page_obj    = $page_id ? get_post( $page_id ) : null;
-$current_tpl = $page_id ? get_post_meta( $page_id, 'mni_contact_template', true ) : 'default';
+$current_tpl = get_post_meta( $page_id, 'mni_page_template', true ) ?: 'default';
 ?>
 
 <div class="wrap">

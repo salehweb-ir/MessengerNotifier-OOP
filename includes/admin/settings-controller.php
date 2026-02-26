@@ -58,8 +58,12 @@ class MNI_Free_Settings_Controller {
             update_post_meta(
                 $page_id,
                 'mni_page_template',
-                $settings['contact_page']['template']
+              $settings['contact_page']['template']
             );
+        
+        $value = get_post_meta( $page_id, 'mni_page_template', true );
+          
+          error_log( 'Saved value: ' . $value );
         }
 
         /* ---------------------------------

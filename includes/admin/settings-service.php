@@ -75,7 +75,9 @@ class MNI_Free_Settings_Service {
             ];
         }
 
-        $template = get_post_meta( $page_id, 'mni_contact_template', true );
+        $template = get_post_meta( $page_id, 'mni_page_template', true );
+        
+        error_log('mni_page_template: ' . $template);
         return [
             'id'       => $page_id,
             'title'    => $post->post_title,

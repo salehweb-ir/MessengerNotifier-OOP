@@ -9,7 +9,7 @@ class mni_free_init {
     private function __construct() {
         // Load translations
         require_once MNI_FREE_PATH . 'includes/core/i18n.php';
-        mni_i18n::load_textdomain();
+        add_action( 'init', [ 'mni_i18n', 'load_textdomain' ] );
 
         // Redirect after activation
         add_action( 'admin_init', [ $this, 'maybe_redirect_to_wizard' ] );

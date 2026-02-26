@@ -13,6 +13,7 @@ class MNI_Free_Wizard_Service {
     public function get_actions() : array {
         $features = MNI_Free_Registry::actions();
         foreach ( $features as $key => $feature ) {
+            // WooCommerce is active but it's features are unset
             if (!empty($feature['hook']) && !class_exists($feature['hook'])) {
                 unset($features[$key]);
             }
